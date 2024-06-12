@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.models.User;
+import com.example.demo.models.UserType;
 import com.example.demo.models.Vendor;
 import com.example.demo.service.VendorService;
 
 @RequestMapping("vendor")
 @CrossOrigin("*")
 @RestController
-
 public class VendorController {
 
 	@Autowired
@@ -28,6 +29,23 @@ public class VendorController {
 	@PostMapping("/")
 	public ResponseEntity<Vendor> saveVendor(@RequestBody Vendor vendor)
 	{
+		User user = new User();
+		
+		user.setEmail(vendor.getVendor_email());
+		user.setUsername(vendor.getUsername());
+		user.setPassword(vendor.getPassword());
+		user.setEnabled(1);
+		user.setRole("vendor");
+		
+		UserType utype = new UserType();
+		
+		utype.setUser_type_id(2);
+		utype.setUser_type("vendor");
+		
+		user.setUsertype(utype);
+		
+		vendor.setUser(user);
+
 		Vendor vend = vendserv.saveVendor(vendor);
 		if(vend!=null) { 
 			return new  ResponseEntity<Vendor>(vend, HttpStatus.OK );

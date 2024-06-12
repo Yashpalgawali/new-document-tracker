@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -41,9 +42,11 @@ public class RegulationHistory {
 	private String hist_file_name; 
 	
 	@ManyToOne(cascade =  CascadeType.MERGE)
+	@JoinColumn(name="vendor_id")
 	private Vendor vendor;
 	
 	@OneToOne(cascade =  CascadeType.MERGE)
+	@JoinColumn(name="regulation_id")
 	private Regulation regulation;
 	
 }
