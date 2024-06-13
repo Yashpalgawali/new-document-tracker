@@ -35,9 +35,21 @@ public class RegulationServImpl implements RegulationService {
 	}
 
 	@Override
-	public Regulation updateRegulation(Regulation regulation) {
+	public int updateRegulation(Regulation regulation) {
 		// TODO Auto-generated method stub
-		return null;
+		return 1;
+	}
+
+	@Override
+	public List<Regulation> getAllRegulationsByVendorId(Integer id) {
+		
+		return regulationrepo.getRegulationByVendorId(id);
+	}
+
+	@Override
+	public List<Regulation> getRegulationsByVendorIdAndRegulationId(Integer vid, Integer rid) {
+		
+		return regulationrepo.getRegulationByVendorIdAndRegulationId(vid, rid);
 	}
 
 }
