@@ -1,22 +1,114 @@
 package com.example.demo.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.models.Regulation;
 import com.example.demo.repository.RegulationRepository;
 
 @Service("regulationserv")
 public class RegulationServImpl implements RegulationService {
-
+	
+	@Value("${spring.application.name}")
+    private String contextPath;
+	
+	@Value("${upload.dir}")
+    private String uploadPath;
+	
 	@Autowired
 	RegulationRepository regulationrepo;
 	
 	@Override
-	public Regulation saveRegulation(Regulation regulation) {
+	public Regulation saveRegulation(Regulation regulation,MultipartFile file) {
+		
+		 String filename = file.getOriginalFilename();
+	     String filepath = "";  
+	     
+	     if (file != null) {
+	    	 File uploadDirectory = new File(uploadPath);
+	    	 if(!uploadDirectory.exists())
+	    	 {
+	    		 boolean created = uploadDirectory.mkdirs();
+	    		 if(created)
+	    		 {
+	    			 File vendorDir = new File(uploadPath+File.separator+"Quality"+File.separator+1);
+	    			 if(!vendorDir.exists()) {
+	    				 boolean create = vendorDir.mkdirs();
+	    				 if(create) {
+	    					 
+	    					 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
+	    					 try {
+								Files.copy(file.getInputStream(), filePath);
+								
+								InputStream ipstream = file.getInputStream();
+								ipstream.close();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+	    				 }
+	    			 }
+	    			 else {
+	    				 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
+    					 try {
+							Files.copy(file.getInputStream(), filePath);
+							
+							InputStream ipstream = file.getInputStream();
+							ipstream.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	    			 }
+	    		 }
+	    	 }
+	    	 else {
+	    		 File vendorDir = new File(uploadPath+File.separator+"Quality"+File.separator+1);
+    			 if(!vendorDir.exists()) {
+    				 boolean create = vendorDir.mkdirs();
+    				 if(create) {
+    					 
+    					 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
+    					 try {
+							Files.copy(file.getInputStream(), filePath);
+							
+							InputStream ipstream = file.getInputStream();
+							ipstream.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+    				 }
+    			 }
+    			 else {
+    				 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
+					 try {
+						Files.copy(file.getInputStream(), filePath);
+						
+						InputStream ipstream = file.getInputStream();
+						ipstream.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+    			 }
+	     }
+
+	} 
+	      regulation.setFile_name(filename);
+	      regulation.setFile_path(filepath);
+		
 		return regulationrepo.save(regulation);
 	}
 
@@ -37,7 +129,7 @@ public class RegulationServImpl implements RegulationService {
 	@Override
 	public int updateRegulation(Regulation regulation) {
 		// TODO Auto-generated method stub
-		return 1;
+		return regulationrepo.updateRegulationById(regulation.getRegulation_name(), regulation.getRegulation_description(), regulation.getRegulation_frequency(), regulation.getRegulation_issued_date(), regulation.getFile_name(), regulation.getFile_path(), regulation.getRegulationtype().getRegulation_type_id(), regulation.getVendor().getVendor_id(),regulation.getRegulation_id());
 	}
 
 	@Override

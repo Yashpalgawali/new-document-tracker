@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.models.Regulation;
 import com.example.demo.models.Vendor;
@@ -23,14 +26,28 @@ import com.example.demo.service.RegulationService;
 @CrossOrigin("*")
 public class RegulationController {
 
+	
 	@Autowired
 	RegulationService regulationserv;
 	
 	@PostMapping("/")
-	public ResponseEntity<Regulation> saveRegulation(@RequestBody Regulation regulation)
+	public ResponseEntity<Regulation> saveRegulation( @RequestPart("regulation_name") String regulation_name,
+            @RequestPart("regulation_description") String regulation_description,
+            @RequestPart("regulation_frequency") String regulation_frequency,
+            @RequestPart("regulation_issued_date") String regulation_issued_date,
+            @RequestPart("vendor_id") String vendor_id,
+            @RequestPart("regulation_type_id") String regulation_type_id,
+            @RequestPart(value = "file", required = false) MultipartFile file) 
 	{
+		Regulation regulate = new Regulation();
+		regulate.setRegulation_name(regulation_name);
+		regulate.setRegulation_description(regulation_description);
+		regulate.setRegulation_frequency(regulation_frequency);
+		regulate.setRegulation_issued_date(regulation_issued_date);
 		
-		Regulation reg = regulationserv.saveRegulation(regulation);
+		
+		
+		Regulation reg = regulationserv.saveRegulation(regulate,file);
 		if(reg!=null) {
 			
 			return new ResponseEntity<Regulation>(reg ,HttpStatus.OK);
@@ -86,7 +103,7 @@ public class RegulationController {
 			return new ResponseEntity<List<Regulation>>(HttpStatus.NO_CONTENT);
 	}
 	
-	@PutMapping("")
+	@PutMapping("/")
 	public ResponseEntity<Regulation> updateRegulationById(@RequestBody Regulation regulation)
 	{
 		int result = regulationserv.updateRegulation(regulation);
