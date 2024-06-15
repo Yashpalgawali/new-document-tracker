@@ -32,6 +32,7 @@ public class RegulationServImpl implements RegulationService {
 	@Override
 	public Regulation saveRegulation(Regulation regulation,MultipartFile file) {
 		
+		System.err.println("Inside saveregualtion() \n "+regulation.toString()+"\n");
 		 String filename = file.getOriginalFilename();
 	     String filepath = "";  
 	     
@@ -108,7 +109,7 @@ public class RegulationServImpl implements RegulationService {
 	} 
 	      regulation.setFile_name(filename);
 	      regulation.setFile_path(filepath);
-		
+		System.err.println("\n After uploading file to server data is \n "+regulation.toString()+"\n");
 		return regulationrepo.save(regulation);
 	}
 
