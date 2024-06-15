@@ -44,7 +44,9 @@ public class RegulationServImpl implements RegulationService {
 	    		 if(created)
 	    		 {
 	    			 File vendorDir = new File(uploadPath+File.separator+"Quality"+File.separator+1);
-	    			 if(!vendorDir.exists()) {
+	    			 filepath =  vendorDir.getAbsolutePath();
+	    			 if(!vendorDir.exists()) 
+	    			 {
 	    				 boolean create = vendorDir.mkdirs();
 	    				 if(create) {
 	    					 
@@ -76,6 +78,7 @@ public class RegulationServImpl implements RegulationService {
 	    	 }
 	    	 else {
 	    		 File vendorDir = new File(uploadPath+File.separator+"Quality"+File.separator+1);
+	    		 filepath =  vendorDir.getAbsolutePath();
     			 if(!vendorDir.exists()) {
     				 boolean create = vendorDir.mkdirs();
     				 if(create) {
