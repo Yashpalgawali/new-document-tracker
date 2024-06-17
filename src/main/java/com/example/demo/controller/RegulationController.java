@@ -29,6 +29,8 @@ import com.example.demo.models.Regulation;
 import com.example.demo.models.RegulationType;
 import com.example.demo.models.Vendor;
 import com.example.demo.service.RegulationService;
+import com.example.demo.service.RegulationTypeService;
+import com.example.demo.service.VendorService;
 
 @RestController
 @RequestMapping("regulation")
@@ -44,6 +46,11 @@ public class RegulationController {
 	@Autowired
 	RegulationService regulationserv;
 	
+	@Autowired
+	VendorService vendserv;
+	
+	@Autowired
+	RegulationTypeService regtypeserv;
 	
 	@PostMapping("/")
     public ResponseEntity<Regulation> handleFileUpload(
@@ -63,10 +70,14 @@ public class RegulationController {
 		regulate.setRegulation_frequency(regulation_frequency);
 		regulate.setRegulation_issued_date(regulation_issued_date);
 		
-		RegulationType regtype = new RegulationType();
-		regtype.setRegulation_type_id(regulation_type_id);
+		RegulationType regtype = regtypeserv.getRegulationTypeById(regulation_type_id);
+		
 		regulate.setRegulationtype(regtype);
 		
+		Vendor vend = vendserv.getVendorById(2);
+		regulate.setVendor(vend);
+		
+		System.err.println(regulate.toString());
 		
 		Regulation reg = regulationserv.saveRegulation(regulate,file);
 		if(reg!=null) {
@@ -76,67 +87,8 @@ public class RegulationController {
 		else {
 			return new ResponseEntity<Regulation>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-//	  System.err.println("inside the upload file controller \n File name is "+file.getOriginalFilename());
-//        try {
-//            if (!file.isEmpty()) {
-//            	
-//            	File vendorDir = new File(uploadPath+File.separator+"Quality"+File.separator+1);
-//            	vendorDir.mkdirs();
-//            	
-//            	Path filePath = Paths.get(vendorDir.getAbsolutePath(), file.getOriginalFilename());
-//				 try {
-//					Files.copy(file.getInputStream(), filePath);
-//					
-//					InputStream ipstream = file.getInputStream();
-//					ipstream.close();
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//            }
-//        } catch (Exception e) {
-//        	System.err.println(e.getMessage());
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed: " + e.getMessage());
-//        }
-//        return ResponseEntity.ok("File uploaded successfully");
+
     }
-	
-	
-	
-	
-//	@PostMapping(value ="/" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
-//	public ResponseEntity<Regulation> saveRegulation( @RequestPart("regulation_name") String regulation_name,
-//            @RequestPart("regulation_description") String regulation_description,
-//            @RequestPart("regulation_frequency") String regulation_frequency,
-//            @RequestPart("regulation_issued_date") String regulation_issued_date,
-//            @RequestPart("regulation_type_id") Integer regulation_type_id,
-//            @RequestPart(value = "file") MultipartFile file) 
-//	{
-//		
-//		System.err.println("inside saveregulation() controller \n");
-//		
-//		
-//		
-//		Regulation regulate = new Regulation();
-//		regulate.setRegulation_name(regulation_name);
-//		regulate.setRegulation_description(regulation_description);
-//		regulate.setRegulation_frequency(regulation_frequency);
-//		regulate.setRegulation_issued_date(regulation_issued_date);
-//		
-//		RegulationType regtype = new RegulationType();
-//		regtype.setRegulation_type_id(regulation_type_id);
-//		regulate.setRegulationtype(regtype);
-//		
-//		
-//		Regulation reg = regulationserv.saveRegulation(regulate,file);
-//		if(reg!=null) {
-//			
-//			return new ResponseEntity<Regulation>(reg ,HttpStatus.OK);
-//		}
-//		else {
-//			return new ResponseEntity<Regulation>(HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
 	
 	@GetMapping("/")
 	public ResponseEntity<List<Regulation>> getAllRegulations()
