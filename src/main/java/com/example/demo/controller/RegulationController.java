@@ -53,7 +53,7 @@ public class RegulationController {
 	RegulationTypeService regtypeserv;
 	
 	@PostMapping("/")
-    public ResponseEntity<Regulation> handleFileUpload(
+    public ResponseEntity<Regulation> saveRegulation(
             @RequestParam("regulation_name") String regulation_name,
             @RequestParam("regulation_description") String regulation_description,
             @RequestParam("regulation_frequency")  String regulation_frequency,
@@ -117,6 +117,7 @@ public class RegulationController {
 	@GetMapping("/vendor/{id}")
 	public ResponseEntity<List<Regulation>> getAllRegulationsByVendorId(@PathVariable("id")Integer id)
 	{
+		
 		List<Regulation> reglist = regulationserv.getAllRegulationsByVendorId(id);
 		if(reglist.size()>0)
 			return new ResponseEntity<List<Regulation>>(reglist, HttpStatus.OK);
@@ -137,12 +138,29 @@ public class RegulationController {
 	}
 	
 	@PutMapping("/")
-	public ResponseEntity<Regulation> updateRegulationById(@RequestBody Regulation regulation)
+	public ResponseEntity<Regulation> updateRegulationById( @RequestParam("regulation_name") String regulation_name,
+            @RequestParam("regulation_description") String regulation_description,
+            @RequestParam("regulation_frequency")  String regulation_frequency,
+            @RequestParam("regulation_type_id")  Integer regulation_type_id,
+            @RequestParam("regulation_issued_date")  String regulation_issued_date,
+            
+            @RequestParam("file") MultipartFile file)
 	{
-		int result = regulationserv.updateRegulation(regulation);
-		if(result>0)
-			return new ResponseEntity<Regulation>(regulationserv.getRegualtionById(regulation.getRegulation_id()), HttpStatus.OK);
-		else
-			return new ResponseEntity<Regulation>(HttpStatus.NOT_MODIFIED);
+
+		Regulation regulate = new Regulation();
+		regulate.setRegulation_name(regulation_name);
+		regulate.setRegulation_description(regulation_description);
+		regulate.setRegulation_frequency(regulation_frequency);
+		regulate.setRegulation_issued_date(regulation_issued_date);
+		
+		RegulationType regtype = regtypeserv.getRegulationTypeById(regulation_type_id);
+		
+		regulate.setRegulationtype(regtype);
+		
+		Vendor vend = vendserv.getVendorById(2);
+		regulate.setVendor(vend);
+		
+		System.err.println(regulate.toString());
+		return null;
 	}
 }

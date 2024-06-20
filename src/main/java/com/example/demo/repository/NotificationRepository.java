@@ -2,7 +2,10 @@ package com.example.demo.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +18,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 	@Query("SELECT n FROM Notification n WHERE n.status=:status")
 	public List<Notification> getAllActiveNotifications(int status);
 	
-	@Query("")
-	public int updateNotification(Integer nid,String name,String description,String start_date,String end_date);
+	@Modifying
+	@Transactional
+	@Query("UPDATE Notification n set n.notification_name=:nname,n.notification_description=:ndesc,n.notification_start_date=:startdate,n.notification_end_date=:enddate,n.status=:status WHERE n.notification_id=:nid")
+	public int updateNotification(String nname,String ndesc,String startdate,String enddate,int status,Integer nid);
 }

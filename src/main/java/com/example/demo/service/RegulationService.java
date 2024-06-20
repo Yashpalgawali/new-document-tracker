@@ -14,7 +14,7 @@ public interface RegulationService {
 	
 	public Regulation getRegualtionById(Integer id);
 	
-	public int updateRegulation(Regulation regulation);
+	public int updateRegulation(Regulation regulation, MultipartFile file);
 	
 	public List<Regulation> getAllRegulationsByVendorId(Integer id);
 	

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.models.Regulation;
+import com.example.demo.models.RegulationHistory;
+import com.example.demo.repository.RegulationHistoryRepo;
 import com.example.demo.repository.RegulationRepository;
 
 @Service("regulationserv")
@@ -28,6 +30,10 @@ public class RegulationServImpl implements RegulationService {
 	
 	@Autowired
 	RegulationRepository regulationrepo;
+	
+	@Autowired
+	 RegulationHistoryRepo regulatehistrepo;
+	
 	
 	@Override
 	public Regulation saveRegulation(Regulation regulation,MultipartFile file) {
@@ -108,11 +114,22 @@ public class RegulationServImpl implements RegulationService {
 					}
     			 }
 	     }
-
 	} 
-	      regulation.setFile_name(filename);
-	      regulation.setFile_path(filepath);
-		System.err.println("\n After uploading file to server data is \n "+regulation.toString()+"\n");
+	     
+	     RegulationHistory rhist = new RegulationHistory();
+	     
+	     rhist.setHist_file_name(filename);
+	     rhist.setHist_file_path(filepath);
+	     rhist.setHist_regulation_description(regulation.getRegulation_description());
+	     rhist.setHist_regulation_name(regulation.getRegulation_name());
+	     rhist.setHist_regulation_issued_date(regulation.getRegulation_issued_date());
+	     rhist.setVendor(regulation.getVendor());
+	     rhist.setRegulation(regulation);
+	     regulatehistrepo.save(rhist);
+	     
+	     regulation.setFile_name(filename);
+	     regulation.setFile_path(filepath);
+		
 		return regulationrepo.save(regulation);
 	}
 
@@ -131,8 +148,196 @@ public class RegulationServImpl implements RegulationService {
 	}
 
 	@Override
-	public int updateRegulation(Regulation regulation) {
-		// TODO Auto-generated method stub
+	public int updateRegulation(Regulation regulation, MultipartFile file) {
+		System.err.println("Inside updateRegulation() \n "+regulation.toString()+"\n");
+		 String filename = file.getOriginalFilename();
+	     String filepath = "";  
+	     
+	     if (file != null) {
+	    	 File uploadDirectory = new File(uploadPath);
+	    	 if(!uploadDirectory.exists())
+	    	 {
+	    		 boolean created = uploadDirectory.mkdirs();
+	    		 if(created)
+	    		 {
+	    			 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id() +File.separator+ regulation.getRegulationtype().getRegulation_type() );
+	    			 filepath =  vendorDir.getAbsolutePath();
+	    			 if(!vendorDir.exists()) 
+	    			 {
+	    				 boolean create = vendorDir.mkdirs();
+	    				 if(create) {
+	    					 
+	    					 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
+	    					 
+	    					 try {
+	    						 	File newFile = new File(filepath+filename);
+	    						 	if(!newFile.exists())
+	    						 	{
+	    						 		Files.copy(file.getInputStream(), filePath);
+	    						 		InputStream ipstream = file.getInputStream();
+	    						 		ipstream.close();
+	    						 	}
+	    						 	else {
+	    						 		 String baseName = filename;
+	    						         String extension = "";
+	    						         int dotIndex = filename.lastIndexOf('.');
+	    						         if (dotIndex > 0) {
+	    						             baseName = filename.substring(0, dotIndex);
+	    						             extension = filename.substring(dotIndex);
+	    						         }
+	    						         int count = 1;
+	    						         while (newFile.exists()) {
+	    						             String newFileName = baseName + count + extension;
+	    						             newFile = new File(newFileName);
+	    						             count++;
+	    						         }
+	    						         Files.copy(file.getInputStream(), filePath);
+		    						 		InputStream ipstream = file.getInputStream();
+		    						 		ipstream.close();
+	    						 	}
+	    				        
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+	    				 }
+	    			 }
+	    			 else {
+	    				 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
+   					 try {
+   						File newFile = new File(filepath+filename);
+					 	if(!newFile.exists())
+					 	{
+					 		Files.copy(file.getInputStream(), filePath);
+					 		InputStream ipstream = file.getInputStream();
+					 		ipstream.close();
+					 	}
+					 	else {
+					 		 String baseName = filename;
+					         String extension = "";
+					         int dotIndex = filename.lastIndexOf('.');
+					         if (dotIndex > 0) {
+					             baseName = filename.substring(0, dotIndex);
+					             extension = filename.substring(dotIndex);
+					         }
+					         int count = 1;
+					         while (newFile.exists()) {
+					             String newFileName = baseName + count + extension;
+					             newFile = new File(newFileName);
+					             count++;
+					         }
+					         Files.copy(file.getInputStream(), filePath);
+						 		InputStream ipstream = file.getInputStream();
+						 		ipstream.close();
+					 	}
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	    			 }
+	    		 }
+	    	 }
+	    	 else {
+	    		 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id()+File.separator+ regulation.getRegulationtype().getRegulation_type() );
+	    		 filepath =  vendorDir.getAbsolutePath();
+   			 if(!vendorDir.exists()) {
+   				 boolean create = vendorDir.mkdirs();
+   				 if(create) {
+   					 
+   					 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
+   					 try {
+   						File newFile = new File(filepath+filename);
+					 	if(!newFile.exists())
+					 	{
+					 		Files.copy(file.getInputStream(), filePath);
+					 		InputStream ipstream = file.getInputStream();
+					 		ipstream.close();
+					 	}
+					 	else {
+					 		 String baseName = filename;
+					         String extension = "";
+					         int dotIndex = filename.lastIndexOf('.');
+					         if (dotIndex > 0) {
+					             baseName = filename.substring(0, dotIndex);
+					             extension = filename.substring(dotIndex);
+					         }
+					         int count = 1;
+					         while (newFile.exists()) {
+					             String newFileName = baseName + count + extension;
+					             newFile = new File(newFileName);
+					             count++;
+					         }
+					         Files.copy(file.getInputStream(), filePath);
+						 		InputStream ipstream = file.getInputStream();
+						 		ipstream.close();
+					 	}
+//							Files.copy(file.getInputStream(), filePath);
+//							
+//							InputStream ipstream = file.getInputStream();
+//							ipstream.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+   				 }
+   			 }
+   			 else {
+   				 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
+					 try {
+						 
+						 File newFile = new File(filepath+filename);
+						 	if(!newFile.exists())
+						 	{
+						 		Files.copy(file.getInputStream(), filePath);
+						 		InputStream ipstream = file.getInputStream();
+						 		ipstream.close();
+						 	}
+						 	else {
+						 		 String baseName = filename;
+						         String extension = "";
+						         int dotIndex = filename.lastIndexOf('.');
+						         if (dotIndex > 0) {
+						             baseName = filename.substring(0, dotIndex);
+						             extension = filename.substring(dotIndex);
+						         }
+						         int count = 1;
+						         while (newFile.exists()) {
+						             String newFileName = baseName + count + extension;
+						             newFile = new File(newFileName);
+						             count++;
+						         }
+						         Files.copy(file.getInputStream(), filePath);
+ 						 		InputStream ipstream = file.getInputStream();
+ 						 		ipstream.close();
+						 	}
+						 	
+//						Files.copy(file.getInputStream(), filePath);
+//						
+//						InputStream ipstream = file.getInputStream();
+//						ipstream.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+   			 }
+	     }
+
+	} 
+	      regulation.setFile_name(filename);
+	      regulation.setFile_path(filepath);
+	      
+	      RegulationHistory rhist = new RegulationHistory();
+		     
+		     rhist.setHist_file_name(filename);
+		     rhist.setHist_file_path(filepath);
+		     rhist.setHist_regulation_description(regulation.getRegulation_description());
+		     rhist.setHist_regulation_name(regulation.getRegulation_name());
+		     rhist.setHist_regulation_issued_date(regulation.getRegulation_issued_date());
+		     rhist.setVendor(regulation.getVendor());
+		     rhist.setRegulation(regulation);
+		     regulatehistrepo.save(rhist);
+		     
+		System.err.println("\n After uploading file to server data is \n "+regulation.toString()+"\n");
 		return regulationrepo.updateRegulationById(regulation.getRegulation_name(), regulation.getRegulation_description(), regulation.getRegulation_frequency(), regulation.getRegulation_issued_date(), regulation.getFile_name(), regulation.getFile_path(), regulation.getRegulationtype().getRegulation_type_id(), regulation.getVendor().getVendor_id(),regulation.getRegulation_id());
 	}
 

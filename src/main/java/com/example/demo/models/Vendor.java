@@ -2,7 +2,6 @@ package com.example.demo.models;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,13 +33,13 @@ public class Vendor {
 	private String vendor_name;
 	
 	private String vendor_email;
-	
+	 
 	@Transient
 	private String username;
 	
 	@Transient
 	private String password;
-	
+	  
 	@JsonIgnore
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")
