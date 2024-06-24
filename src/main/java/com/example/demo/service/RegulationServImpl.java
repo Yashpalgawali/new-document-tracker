@@ -79,6 +79,7 @@ public class RegulationServImpl implements RegulationService {
 	    		 }
 	    	 }
 	    	 else {
+	    		 
 	    		 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id()+File.separator+ regulation.getRegulationtype().getRegulation_type() );
 	    		 filepath =  vendorDir.getAbsolutePath();
     			 if(!vendorDir.exists()) {
