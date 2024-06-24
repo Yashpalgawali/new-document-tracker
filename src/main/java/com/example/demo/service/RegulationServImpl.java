@@ -32,13 +32,12 @@ public class RegulationServImpl implements RegulationService {
 	RegulationRepository regulationrepo;
 	
 	@Autowired
-	 RegulationHistoryRepo regulatehistrepo;
-	
+	RegulationHistoryRepo regulatehistrepo;
 	
 	@Override
 	public Regulation saveRegulation(Regulation regulation,MultipartFile file) {
 		
-		System.err.println("Inside saveregualtion() \n "+regulation.toString()+"\n");
+		System.err.println("Inside saveregulation() \n "+regulation.toString()+"\n");
 		 String filename = file.getOriginalFilename();
 	     String filepath = "";  
 	     
@@ -51,8 +50,7 @@ public class RegulationServImpl implements RegulationService {
 	    		 {
 	    			 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id() +File.separator+ regulation.getRegulationtype().getRegulation_type() );
 	    			 filepath =  vendorDir.getAbsolutePath();
-	    			 if(!vendorDir.exists()) 
-	    			 {
+	    			 if(!vendorDir.exists())  {
 	    				 boolean create = vendorDir.mkdirs();
 	    				 if(create) {
 	    					 
@@ -63,7 +61,6 @@ public class RegulationServImpl implements RegulationService {
 								InputStream ipstream = file.getInputStream();
 								ipstream.close();
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 	    				 }
@@ -76,7 +73,6 @@ public class RegulationServImpl implements RegulationService {
 							InputStream ipstream = file.getInputStream();
 							ipstream.close();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 	    			 }
@@ -86,22 +82,24 @@ public class RegulationServImpl implements RegulationService {
 	    		 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id()+File.separator+ regulation.getRegulationtype().getRegulation_type() );
 	    		 filepath =  vendorDir.getAbsolutePath();
     			 if(!vendorDir.exists()) {
+    				 System.err.println("Vendor Directory \n"+vendorDir.getAbsolutePath()+" DOES NOT EXISTS \n");
     				 boolean create = vendorDir.mkdirs();
     				 if(create) {
     					 
     					 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
     					 try {
 							Files.copy(file.getInputStream(), filePath);
-							
+						   
 							InputStream ipstream = file.getInputStream();
 							ipstream.close();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
+
 							e.printStackTrace();
 						}
     				 }
     			 }
     			 else {
+    				 System.err.println("Vendor Directory \n"+vendorDir.getAbsolutePath()+" already EXISTS\n");
     				 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
 					 try {
 						Files.copy(file.getInputStream(), filePath);
@@ -109,7 +107,7 @@ public class RegulationServImpl implements RegulationService {
 						InputStream ipstream = file.getInputStream();
 						ipstream.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					}
     			 }
@@ -170,34 +168,36 @@ public class RegulationServImpl implements RegulationService {
 	    					 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
 	    					 
 	    					 try {
-	    						 	File newFile = new File(filepath+filename);
-	    						 	if(!newFile.exists())
-	    						 	{
-	    						 		Files.copy(file.getInputStream(), filePath);
-	    						 		InputStream ipstream = file.getInputStream();
-	    						 		ipstream.close();
-	    						 	}
-	    						 	else {
-	    						 		 String baseName = filename;
-	    						         String extension = "";
-	    						         int dotIndex = filename.lastIndexOf('.');
-	    						         if (dotIndex > 0) {
-	    						             baseName = filename.substring(0, dotIndex);
-	    						             extension = filename.substring(dotIndex);
-	    						         }
-	    						         int count = 1;
-	    						         while (newFile.exists()) {
-	    						             String newFileName = baseName + count + extension;
-	    						             newFile = new File(newFileName);
-	    						             count++;
-	    						         }
+//	    						 	File newFile = new File(filepath+filename);
+//	    						 	if(!newFile.exists())
+//	    						 	{
+//	    						 		Files.copy(file.getInputStream(), filePath);
+//	    						 		InputStream ipstream = file.getInputStream();
+//	    						 		ipstream.close();
+//	    						 	}
+//	    						 	else {
+//	    						 		 String baseName = filename;
+//	    						         String extension = "";
+//	    						         int dotIndex = filename.lastIndexOf('.');
+//	    						         if (dotIndex > 0) {
+//	    						             baseName = filename.substring(0, dotIndex);
+//	    						             extension = filename.substring(dotIndex);
+//	    						         }
+//	    						         int count = 1;
+//	    						         while (newFile.exists()) {
+//	    						             String newFileName = baseName + count + extension;
+//	    						             newFile = new File(newFileName);
+//	    						             count++;
+//	    						             filePath = Paths.get(vendorDir.getAbsolutePath(), newFileName);
+//	    						         }
+	    						         System.err.println("inside vendor directory create() \n");
 	    						         Files.copy(file.getInputStream(), filePath);
+	    						         Files.deleteIfExists(filePath);
 		    						 		InputStream ipstream = file.getInputStream();
 		    						 		ipstream.close();
-	    						 	}
+	    						 	//}
 	    				        
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 	    				 }
@@ -205,39 +205,42 @@ public class RegulationServImpl implements RegulationService {
 	    			 else {
 	    				 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
    					 try {
-   						File newFile = new File(filepath+filename);
-					 	if(!newFile.exists())
-					 	{
-					 		Files.copy(file.getInputStream(), filePath);
-					 		InputStream ipstream = file.getInputStream();
-					 		ipstream.close();
-					 	}
-					 	else {
-					 		 String baseName = filename;
-					         String extension = "";
-					         int dotIndex = filename.lastIndexOf('.');
-					         if (dotIndex > 0) {
-					             baseName = filename.substring(0, dotIndex);
-					             extension = filename.substring(dotIndex);
-					         }
-					         int count = 1;
-					         while (newFile.exists()) {
-					             String newFileName = baseName + count + extension;
-					             newFile = new File(newFileName);
-					             count++;
-					         }
+//   						File newFile = new File(filepath+filename);
+//					 	if(!newFile.exists())
+//					 	{
+//					 		Files.copy(file.getInputStream(), filePath);
+//					 		InputStream ipstream = file.getInputStream();
+//					 		ipstream.close();
+//					 	}
+//					 	else {
+//					 		 String baseName = filename;
+//					         String extension = "";
+//					         int dotIndex = filename.lastIndexOf('.');
+//					         if (dotIndex > 0) {
+//					             baseName = filename.substring(0, dotIndex);
+//					             extension = filename.substring(dotIndex);
+//					         }
+//					         int count = 1;
+//					         while (newFile.exists()) {
+//					             String newFileName = baseName + count + extension;
+//					             newFile = new File(newFileName);
+//					             count++;
+//					             filePath = Paths.get(vendorDir.getAbsolutePath(), newFileName);
+//					         }
+   						 System.err.println("Inside alredy created vendors Directory\n");
 					         Files.copy(file.getInputStream(), filePath);
-						 		InputStream ipstream = file.getInputStream();
-						 		ipstream.close();
-					 	}
+					         Files.deleteIfExists(filePath);
+						 	 InputStream ipstream = file.getInputStream();
+						 	 ipstream.close();
+					 	//}
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 	    			 }
 	    		 }
 	    	 }
 	    	 else {
+	    		 System.err.println("Upload directory alredy exists \n");
 	    		 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id()+File.separator+ regulation.getRegulationtype().getRegulation_type() );
 	    		 filepath =  vendorDir.getAbsolutePath();
    			 if(!vendorDir.exists()) {
@@ -246,37 +249,37 @@ public class RegulationServImpl implements RegulationService {
    					 
    					 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
    					 try {
-   						File newFile = new File(filepath+filename);
-					 	if(!newFile.exists())
-					 	{
-					 		Files.copy(file.getInputStream(), filePath);
-					 		InputStream ipstream = file.getInputStream();
-					 		ipstream.close();
-					 	}
-					 	else {
-					 		 String baseName = filename;
-					         String extension = "";
-					         int dotIndex = filename.lastIndexOf('.');
-					         if (dotIndex > 0) {
-					             baseName = filename.substring(0, dotIndex);
-					             extension = filename.substring(dotIndex);
-					         }
-					         int count = 1;
-					         while (newFile.exists()) {
-					             String newFileName = baseName + count + extension;
-					             newFile = new File(newFileName);
-					             count++;
-					         }
-					         Files.copy(file.getInputStream(), filePath);
-						 		InputStream ipstream = file.getInputStream();
-						 		ipstream.close();
-					 	}
-//							Files.copy(file.getInputStream(), filePath);
-//							
-//							InputStream ipstream = file.getInputStream();
-//							ipstream.close();
+//   						File newFile = new File(filepath+filename);
+//					 	if(!newFile.exists())
+//					 	{
+//					 		Files.copy(file.getInputStream(), filePath);
+//					 		InputStream ipstream = file.getInputStream();
+//					 		ipstream.close();
+//					 	}
+//					 	else {
+//					 		 String baseName = filename;
+//					         String extension = "";
+//					         int dotIndex = filename.lastIndexOf('.');
+//					         if (dotIndex > 0) {
+//					             baseName = filename.substring(0, dotIndex);
+//					             extension = filename.substring(dotIndex);
+//					         }
+//					         int count = 1;
+//					         while (newFile.exists()) {
+//					             String newFileName = baseName + count + extension;
+//					             newFile = new File(newFileName);
+//					             count++;
+//					             filePath = Paths.get(vendorDir.getAbsolutePath(), newFileName);
+//					         }
+//					         Files.copy(file.getInputStream(), filePath);
+//						 		InputStream ipstream = file.getInputStream();
+//						 		ipstream.close();
+//					 	}
+							Files.copy(file.getInputStream(), filePath);
+							   Files.deleteIfExists(filePath);
+							InputStream ipstream = file.getInputStream();
+							ipstream.close();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
    				 }
@@ -284,8 +287,8 @@ public class RegulationServImpl implements RegulationService {
    			 else {
    				 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
 					 try {
-						 
-						 File newFile = new File(filepath+filename);
+//						 
+						 File newFile = new File(vendorDir.getAbsolutePath()+filename);
 						 	if(!newFile.exists())
 						 	{
 						 		Files.copy(file.getInputStream(), filePath);
@@ -305,8 +308,9 @@ public class RegulationServImpl implements RegulationService {
 						             String newFileName = baseName + count + extension;
 						             newFile = new File(newFileName);
 						             count++;
+						             filePath = Paths.get(vendorDir.getAbsolutePath(), newFileName);
 						         }
-						         Files.copy(file.getInputStream(), filePath);
+						        Files.copy(file.getInputStream(), filePath);
  						 		InputStream ipstream = file.getInputStream();
  						 		ipstream.close();
 						 	}
@@ -316,12 +320,10 @@ public class RegulationServImpl implements RegulationService {
 //						InputStream ipstream = file.getInputStream();
 //						ipstream.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
    			 }
 	     }
-
 	} 
 	      regulation.setFile_name(filename);
 	      regulation.setFile_path(filepath);

@@ -3,6 +3,7 @@ package com.example.demo.models;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,14 +39,14 @@ public class RegulationHistory {
 	private String hist_regulation_issued_date;
 	
 	private String hist_file_path;
-	
+	 
 	private String hist_file_name; 
 	
 	@ManyToOne(cascade =  CascadeType.MERGE)
 	@JoinColumn(name="vendor_id")
 	private Vendor vendor;
 	
-	@OneToOne(cascade =  CascadeType.MERGE)
+	@OneToOne(cascade =  CascadeType.MERGE,fetch = FetchType.LAZY)
 	@JoinColumn(name="regulation_id")
 	private Regulation regulation;
 	

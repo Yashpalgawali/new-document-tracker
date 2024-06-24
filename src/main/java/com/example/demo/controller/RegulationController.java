@@ -63,7 +63,7 @@ public class RegulationController {
             @RequestParam("file") MultipartFile file) {
         // Handle the uploaded file and other data here
         // For example, save the file to a local directory
-		
+
 		Regulation regulate = new Regulation();
 		regulate.setRegulation_name(regulation_name);
 		regulate.setRegulation_description(regulation_description);
@@ -74,7 +74,7 @@ public class RegulationController {
 		
 		regulate.setRegulationtype(regtype);
 		
-		Vendor vend = vendserv.getVendorById(2);
+		Vendor vend = vendserv.getVendorById(5);
 		regulate.setVendor(vend);
 		
 		System.err.println(regulate.toString());
@@ -143,11 +143,12 @@ public class RegulationController {
             @RequestParam("regulation_frequency")  String regulation_frequency,
             @RequestParam("regulation_type_id")  Integer regulation_type_id,
             @RequestParam("regulation_issued_date")  String regulation_issued_date,
-            
+            @RequestParam("regulation_id") Integer regulation_id,
             @RequestParam("file") MultipartFile file)
 	{
 
 		Regulation regulate = new Regulation();
+		regulate.setRegulation_id(regulation_id);
 		regulate.setRegulation_name(regulation_name);
 		regulate.setRegulation_description(regulation_description);
 		regulate.setRegulation_frequency(regulation_frequency);
@@ -160,7 +161,14 @@ public class RegulationController {
 		Vendor vend = vendserv.getVendorById(2);
 		regulate.setVendor(vend);
 		
-		System.err.println(regulate.toString());
-		return null;
+		System.err.println("INside update regulation()\n "+regulate.toString());
+		
+		int res = regulationserv.updateRegulation(regulate, file);
+		if(res>0) {
+			return new ResponseEntity<Regulation>(HttpStatus.OK);
+		}
+		else {
+			return new ResponseEntity<Regulation>(HttpStatus.NOT_MODIFIED);
+		}	
 	}
 }
