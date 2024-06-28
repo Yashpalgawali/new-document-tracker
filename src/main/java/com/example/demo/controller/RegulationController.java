@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.models.Regulation;
+import com.example.demo.models.RegulationDTO;
 import com.example.demo.models.RegulationType;
 import com.example.demo.models.Vendor;
 import com.example.demo.service.RegulationService;
@@ -74,7 +76,7 @@ public class RegulationController {
 		
 		regulate.setRegulationtype(regtype);
 		
-		Vendor vend = vendserv.getVendorById(5);
+		Vendor vend = vendserv.getVendorById(2);
 		regulate.setVendor(vend);
 		
 		System.err.println(regulate.toString());
@@ -90,17 +92,51 @@ public class RegulationController {
 
     }
 	
-	@GetMapping("/")
-	public ResponseEntity<List<Regulation>> getAllRegulations()
+	// Using the DTO class
+	@GetMapping(value= "/")
+	public ResponseEntity<List<RegulationDTO>> getAllRegulations()
 	{
 		List<Regulation> reglist = regulationserv.getAllRegulations();
+		
+		List<RegulationDTO> regulationDTOs = new ArrayList<>();
+		
+		for(Regulation regulation : reglist)
+		{
+			RegulationDTO rdto = new RegulationDTO();
+			rdto.setRegulation_id(regulation.getRegulation_id());
+			rdto.setRegulation_name(regulation.getRegulation_name());
+			rdto.setRegulation_description(regulation.getRegulation_description());
+			rdto.setRegulation_frequency(regulation.getRegulation_frequency());
+			rdto.setRegulation_issued_date(regulation.getRegulation_issued_date());
+			rdto.setFile_name(regulation.getFile_name());
+			rdto.setFile_path(regulation.getFile_path());
+			rdto.setVendor(regulation.getVendor());
+			rdto.setRegulation_type(regulation.getRegulationtype());
+			
+			regulationDTOs.add(rdto);
+			
+		}
 		if(reglist.size()>0) {
-			return new ResponseEntity<List<Regulation>>(reglist , HttpStatus.OK);
+			return new ResponseEntity<List<RegulationDTO>>(regulationDTOs , HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<List<Regulation>>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<RegulationDTO>>(HttpStatus.NO_CONTENT);
 		}
 	}
+	
+//	@GetMapping(value= "/")
+//	public ResponseEntity<List<RegulationDTO>> getAllRegulations()
+//	{
+//		List<Regulation> reglist = regulationserv.getAllRegulations();
+//		
+//		
+//		if(reglist.size()>0) {
+//			return new ResponseEntity<List<Regulation>>(reglist , HttpStatus.OK);
+//		}
+//		else {
+//			return new ResponseEntity<List<Regulation>>(HttpStatus.NO_CONTENT);
+//		}
+//	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Regulation> getRegulationById(@PathVariable("id") Integer id)

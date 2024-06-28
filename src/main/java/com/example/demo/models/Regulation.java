@@ -16,9 +16,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -44,14 +48,15 @@ public class Regulation {
 	
 	private String file_name;
 	
-	@ManyToOne(cascade =  CascadeType.MERGE)
+	@ManyToOne(cascade =  CascadeType.MERGE , fetch = FetchType.EAGER)
+	
 	@JoinColumn(name="vendor_id")
 	private Vendor vendor;
 	
-	@OneToOne(cascade = CascadeType.MERGE)
+	@OneToOne(cascade = CascadeType.MERGE , fetch = FetchType.EAGER)
 	@JoinColumn(name="regulation_type_id")
 	private RegulationType regulationtype;
 	
-	 @OneToMany(mappedBy = "regulation", cascade = CascadeType.ALL)
-	    private List<RegulationHistory> history;
+	 @OneToMany(mappedBy = "regulation", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+	 private List<RegulationHistory> history;
 }

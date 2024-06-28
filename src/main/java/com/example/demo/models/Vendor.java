@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 @Data
@@ -23,6 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @SequenceGenerator(name = "vendor_seq" ,allocationSize = 1, initialValue = 1)
+
 @Table(name="tbl_vendor")
 public class Vendor {
 
@@ -41,6 +43,7 @@ public class Vendor {
 	private String password;
 	  
 	@JsonIgnore
+	@ToString.Exclude
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")
 	private User user;

@@ -10,6 +10,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,15 +37,19 @@ public class RegulationServImpl implements RegulationService {
 	@Autowired
 	RegulationHistoryRepo regulatehistrepo;
 
-	private Path getUniqueFilePath(Path targetLocation) {
+	private static Path getUniqueFilePath(Path targetLocation) {
 		String filename = targetLocation.getFileName().toString();
         String fileExtension = "";
+        
+        System.err.println("Inside getUniqueFilePath() \n The filename is = "+filename+"\n TArget Location is = "+targetLocation.toString());
+        
         int dotIndex = filename.lastIndexOf('.');
         if (dotIndex > 0) {
             fileExtension = filename.substring(dotIndex);
             filename = filename.substring(0, dotIndex);
+           
         }
-
+        
         Path filePath = targetLocation;
         int count = 1;
         while (Files.exists(filePath)) {
@@ -51,72 +57,76 @@ public class RegulationServImpl implements RegulationService {
             filePath = targetLocation.getParent().resolve(newFilename);
             count++;
         }
-
         return filePath;
 	} 
 	
 	@Override
 	public Regulation saveRegulation(Regulation regulation,MultipartFile file) {
 		
-		 System.err.println("Inside saveregulation() \n "+regulation.toString()+"\n");
 		 String filename = file.getOriginalFilename();
 	     String filepath = "";  
 
 	     File uploadDirectory = new File(uploadPath);
 	     if(!uploadDirectory.exists())
 	     {
-	    	 System.err.println("upload directory not present ");
 	    	 boolean created = uploadDirectory.mkdirs();
-    		 if(created)
-    		 {
-    			 System.err.println("Upload directory created");
-    			 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id() +File.separator+ regulation.getRegulationtype().getRegulation_type() );
-    			 Path filePath = Paths.get(vendorDir.getAbsolutePath());
+    		 if(created) {
     			 
+    			 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id() +File.separator+ regulation.getRegulationtype().getRegulation_type() );
+    			 Path filePath = Paths.get(vendorDir.getAbsolutePath(),filename);
+    			 
+    			 filePath = getUniqueFilePath(filePath);
+    			
+    			 filename =filePath.getFileName().toString();// This will Get new file name if the file already exists
     			 filepath = vendorDir.getAbsolutePath();
     					 
     			 if(!vendorDir.exists()) {
     				 boolean vcreatedir = vendorDir.mkdirs();
     				 if(vcreatedir) {
-    					 System.err.println("Vendor Directory is created \n i.e. "+vendorDir);
+    					 try(InputStream inputStream = file.getInputStream()) {
+ 							Files.copy(inputStream , filePath );
+ 						} catch (IOException e) { 
+ 							e.printStackTrace();
+ 						}
     				 }
     			 }
     			 else {
-    				 System.err.println("Vendor Directory already present \n i.e. "+vendorDir);
+    				 try(InputStream inputStream = file.getInputStream()) {
+							Files.copy(inputStream , filePath );
+						} catch (IOException e) { 
+							e.printStackTrace();
+						}
     			 }
     		 }
 	     }
-	     else 
-	     {
+	     else    {
 	    	 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id() +File.separator+ regulation.getRegulationtype().getRegulation_type() );
 	    	 filepath = vendorDir.getAbsolutePath();
 	    	 
-	    	 Path filePath =  Paths.get(vendorDir.getAbsolutePath(),file.getName());
-			 filePath = getUniqueFilePath(filePath);
+	    	 Path filePath =  Paths.get(vendorDir.getAbsolutePath(),filename);
+	    	 
+	    	 filePath = getUniqueFilePath(filePath); // This will Get new file name if the file already exists
+			
+			 filename =filePath.getFileName().toString();
 			 
 	    	 if(!vendorDir.exists()) {
 				 boolean vcreatedir = vendorDir.mkdirs();
 				 if(vcreatedir)
 				 {
-					 System.err.println("Vendor Directory is created \n i.e. "+vendorDir);
 					 try(InputStream inputStream = file.getInputStream()) {
 							Files.copy(inputStream , filePath );
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 				 }
 			 }
 			 else {
-				 System.err.println("Vendor Directory already present \n i.e. "+vendorDir);
 				 try(InputStream inputStream = file.getInputStream()) {
 						Files.copy(inputStream , filePath );
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 			 }
-	    	 
 	     }
 	     
 	     regulation.setFile_name(filename);
@@ -139,149 +149,6 @@ public class RegulationServImpl implements RegulationService {
 		return savedRegulation;
 	}
 	
-//	@Override
-//	public Regulation saveRegulation(Regulation regulation,MultipartFile file) {
-//		
-//		System.err.println("Inside saveregulation() \n "+regulation.toString()+"\n");
-//		 String filename = file.getOriginalFilename();
-//	     String filepath = "";  
-//	     
-//	     if (file != null) {
-//	    	 File uploadDirectory = new File(uploadPath);
-//	    	 if(!uploadDirectory.exists())
-//	    	 {
-//	    		 boolean created = uploadDirectory.mkdirs();
-//	    		 if(created)
-//	    		 {
-//	    			 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id() +File.separator+ regulation.getRegulationtype().getRegulation_type() );
-//	    			 filepath =  vendorDir.getAbsolutePath();
-//	    			 if(!vendorDir.exists())  {
-//	    				 boolean create = vendorDir.mkdirs();
-//	    				 if(create) {
-//	    					 
-//	    					 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
-//	    					 try {
-//								Files.copy(file.getInputStream(), filePath);
-//								
-//								InputStream ipstream = file.getInputStream();
-//								ipstream.close();
-//							} catch (IOException e) {
-//								e.printStackTrace();
-//							}
-//	    				 }
-//	    			 }
-//	    			 else {
-//	    				 Path filePath = Paths.get(vendorDir.getAbsolutePath(), filename);
-//    					 try {
-//							Files.copy(file.getInputStream(), filePath);
-//							
-//							InputStream ipstream = file.getInputStream();
-//							ipstream.close();
-//						} catch (IOException e) {
-//							e.printStackTrace();
-//						}
-//	    			 }
-//	    		 }
-//	    	 }
-//	    	 else {
-//	    		 
-//	    		 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id()+File.separator+ regulation.getRegulationtype().getRegulation_type() );
-//	    		 filepath =  vendorDir.getAbsolutePath();
-//    			 if(!vendorDir.exists()) {
-//    				 System.err.println("Vendor Directory \n"+filepath+" DOES NOT EXISTS \n");
-//    				 boolean create = vendorDir.mkdirs();
-//    				 if(create) {
-//    					 
-//    					 Path filePath = Paths.get(filepath, filename);
-//    					 try {
-//							Files.copy(file.getInputStream(), filePath);
-//						   
-//							InputStream ipstream = file.getInputStream();
-//							ipstream.close();
-//						} catch (IOException e) {
-//
-//							e.printStackTrace();
-//						}
-//    				 }
-//    			 }
-//    			 else {
-//    				 System.err.println("Vendor Directory \n"+filepath+" already EXISTS\nFile name is "+filename+"\n");
-//    				 Path filePath = Paths.get(filepath, filename);
-//					 try {
-//						 File newFile = new File(filePath.toString() +File.separator +filename);
-//						
-//						 	if(!Files.exists(filePath))
-//						 	{
-//						 		 Path targetLocation = Paths.get(uploadPath).resolve(file.getOriginalFilename());
-//
-//						         // Ensure the directories exist
-//						         Files.createDirectories(targetLocation.getParent());
-//
-//						         // Copy the file to the target location
-//						         try (InputStream inputStream = file.getInputStream()) {
-//						             Files.copy(inputStream, targetLocation);
-//						         }
-//
-//						 	}
-//						 	else {
-//						 		
-//						 		uploadPath = uploadPath+File.separator+5+regulation.getRegulationtype().getRegulation_type();
-//						 		Path targetLocation = Paths.get(uploadPath).resolve(file.getOriginalFilename());
-//
-//						         // Ensure the directories exist
-//						         Files.createDirectories(targetLocation.getParent());
-//
-//						         // Copy the file to the target location
-//						         try (InputStream inputStream = file.getInputStream()) {
-//						        	 
-//						        	 String baseName = targetLocation.getFileName().toString();
-//						        	 String extension = "";
-//						        	 
-//						        	 int dotIndex = baseName.lastIndexOf(".");
-//						        	 if(dotIndex > 0)  {
-//						        		 extension = baseName.substring(dotIndex);
-//						        		 baseName = baseName.substring(0, dotIndex);
-//						        	 }
-//						        	 
-//						        	 filePath = targetLocation;
-//						        	 int count = 1;
-//						        	 
-//						        	 while(Files.exists(filePath)) {
-//						        		 String newFileName = baseName+"_"+count+extension;
-//						        		 filePath = targetLocation.getParent().resolve(newFileName);
-//						        		 count++;
-//						        	 }
-//						        	 
-//						             Files.copy(inputStream, filePath);
-//						         }
-//						 	}
-//
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//    			 }
-//	     }
-//	} 
-//	     
-//	     regulation.setFile_name(filename);
-//	     regulation.setFile_path(filepath);
-//	     
-//	     Regulation savedRegulation = regulationrepo.save(regulation);
-//	     
-//	     RegulationHistory rhist = new RegulationHistory();
-//	     
-//	     rhist.setHist_file_name(filename);
-//	     rhist.setHist_file_path(filepath);
-//	     rhist.setHist_regulation_frequency(regulation.getRegulation_frequency());
-//	     rhist.setHist_regulation_description(regulation.getRegulation_description());
-//	     rhist.setHist_regulation_name(regulation.getRegulation_name());
-//	     rhist.setHist_regulation_issued_date(regulation.getRegulation_issued_date());
-//	     rhist.setVendor(regulation.getVendor());
-//	     rhist.setRegulation(regulation);
-//	     regulatehistrepo.save(rhist);
-//	     
-//		return savedRegulation;
-//	}
 
 	@Override
 	public List<Regulation> getAllRegulations() {
