@@ -79,7 +79,6 @@ public class RegulationController {
 		Vendor vend = vendserv.getVendorById(2);
 		regulate.setVendor(vend);
 		
-		System.err.println(regulate.toString());
 		
 		Regulation reg = regulationserv.saveRegulation(regulate,file);
 		if(reg!=null) {
@@ -124,19 +123,6 @@ public class RegulationController {
 		}
 	}
 	
-//	@GetMapping(value= "/")
-//	public ResponseEntity<List<RegulationDTO>> getAllRegulations()
-//	{
-//		List<Regulation> reglist = regulationserv.getAllRegulations();
-//		
-//		
-//		if(reglist.size()>0) {
-//			return new ResponseEntity<List<Regulation>>(reglist , HttpStatus.OK);
-//		}
-//		else {
-//			return new ResponseEntity<List<Regulation>>(HttpStatus.NO_CONTENT);
-//		}
-//	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Regulation> getRegulationById(@PathVariable("id") Integer id)

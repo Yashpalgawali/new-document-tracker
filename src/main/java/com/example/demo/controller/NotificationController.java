@@ -79,17 +79,17 @@ public class NotificationController {
 	}
 	
 	
-//	@GetMapping("/{id}")
-//	public ResponseEntity<List<Notification>> getActiveNotifications(@PathVariable("id") int status)
-//	{
-//		List<Notification> allNotifications = notificationserv.getAllActiveNotifications(status);
-//		if(allNotifications.size()>0) {
-//			return new ResponseEntity<List<Notification>>(allNotifications , HttpStatus.OK);
-//		}
-//		else {
-//			return new ResponseEntity<List<Notification>>(HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
+	@GetMapping("/active")
+	public ResponseEntity<List<Notification>> getActiveNotifications()
+	{
+		List<Notification> allNotifications = notificationserv.getAllActiveNotifications(1);
+		if(allNotifications.size()>0) {
+			return new ResponseEntity<List<Notification>>(allNotifications , HttpStatus.OK);
+		}
+		else {
+			return new ResponseEntity<List<Notification>>(HttpStatus.NO_CONTENT);
+		}
+	}
 	
 	@PutMapping("/")
 	public ResponseEntity<Notification> updateNotification(@RequestBody Notification notification)

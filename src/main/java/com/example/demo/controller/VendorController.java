@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.models.User;
 import com.example.demo.models.UserType;
 import com.example.demo.models.Vendor;
+import com.example.demo.service.UserService;
 import com.example.demo.service.VendorService;
 
 @RequestMapping("vendor")
@@ -26,6 +27,9 @@ public class VendorController {
 	@Autowired
 	VendorService vendserv;
 	
+	@Autowired
+	UserService userserv;
+		
 	@PostMapping("/")
 	public ResponseEntity<Vendor> saveVendor(@RequestBody Vendor vendor)
 	{
@@ -44,9 +48,11 @@ public class VendorController {
 		
 		user.setUsertype(utype);
 		
+		userserv.saveUser(user);
+		
 		vendor.setUser(user);
-
-		System.err.println(vendor.toString());
+		
+		
 		Vendor vend = vendserv.saveVendor(vendor);
 		if(vend!=null) { 
 			return new  ResponseEntity<Vendor>(vend, HttpStatus.OK );
