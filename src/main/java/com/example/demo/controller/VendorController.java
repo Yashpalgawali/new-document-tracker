@@ -51,8 +51,7 @@ public class VendorController {
 		userserv.saveUser(user);
 		
 		vendor.setUser(user);
-		
-		
+		vendor.setEnabled(1);		
 		Vendor vend = vendserv.saveVendor(vendor);
 		if(vend!=null) { 
 			return new  ResponseEntity<Vendor>(vend, HttpStatus.OK );

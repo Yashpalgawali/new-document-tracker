@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.http.HttpHeaders;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -193,4 +195,14 @@ public class RegulationController {
 			return new ResponseEntity<Regulation>(HttpStatus.NOT_MODIFIED);
 		}	
 	}
+	
+	
+	@GetMapping("/{filename}")
+	public ResponseEntity<Resource> downloadFile(@PathVariable("filename") String filename)
+	{
+	
+		
+		return null;
+	}
+
 }

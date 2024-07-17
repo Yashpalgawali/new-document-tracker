@@ -49,4 +49,5 @@ public class Vendor {
 	private User user;
 	
 	
+	private Integer enabled;
 }
