@@ -85,7 +85,7 @@ public class RegulationController {
 		Regulation reg = regulationserv.saveRegulation(regulate,file);
 		if(reg!=null) {
 			
-			return new ResponseEntity<Regulation>(reg ,HttpStatus.OK);
+			return new ResponseEntity<Regulation>(reg ,HttpStatus.CREATED);
 		}
 		else {
 			return new ResponseEntity<Regulation>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -141,7 +141,6 @@ public class RegulationController {
 	@GetMapping("/vendor/{id}")
 	public ResponseEntity<List<Regulation>> getAllRegulationsByVendorId(@PathVariable("id")Integer id)
 	{
-		
 		List<Regulation> reglist = regulationserv.getAllRegulationsByVendorId(id);
 		if(reglist.size()>0)
 			return new ResponseEntity<List<Regulation>>(reglist, HttpStatus.OK);
@@ -201,7 +200,6 @@ public class RegulationController {
 	public ResponseEntity<Resource> downloadFile(@PathVariable("filename") String filename)
 	{
 	
-		
 		return null;
 	}
 

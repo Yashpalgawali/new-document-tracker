@@ -44,10 +44,9 @@ public class Vendor {
 	  
 	@JsonIgnore
 	@ToString.Exclude
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "user_id")
-	private User user;
-	
+	private User user; 
 	
 	private Integer enabled;
 }
