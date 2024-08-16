@@ -314,4 +314,11 @@ public class RegulationServImpl implements RegulationService {
 		return regulationrepo.getRegulationByVendorIdAndRegulationId(vid, rid);
 	}
 
+	@Override
+	public List<Regulation> getExpiredRegulations() {
+	
+		
+		return null;
+	}
+
 }

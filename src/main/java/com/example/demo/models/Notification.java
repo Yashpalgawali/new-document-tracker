@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @SequenceGenerator(name="notification_seq", allocationSize = 1 , initialValue = 1)
 @Table(name="tbl_notification")
-@NamedQuery(name="query_get_all_notifications",query = "SELECT n FROM Notification n")
+//@NamedQuery(name="query_get_all_notifications",query = "SELECT n FROM Notification n")
 public class Notification {
 
 	@Id

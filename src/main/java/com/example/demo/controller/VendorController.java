@@ -23,13 +23,18 @@ import com.example.demo.service.VendorService;
 @CrossOrigin("*")
 @RestController
 public class VendorController {
-
-	@Autowired
-	VendorService vendserv;
+ 
+	private VendorService vendserv;
 	
-	@Autowired
-	UserService userserv;
-		
+	private UserService userserv;
+	
+	@Autowired	
+	public VendorController(VendorService vendserv, UserService userserv) {
+		super();
+		this.vendserv = vendserv;
+		this.userserv = userserv;
+	}
+
 	@PostMapping("/")
 	public ResponseEntity<Vendor> saveVendor(@RequestBody Vendor vendor)
 	{
@@ -54,7 +59,7 @@ public class VendorController {
 		vendor.setEnabled(1);		
 		Vendor vend = vendserv.saveVendor(vendor);
 		if(vend!=null) { 
-			return new  ResponseEntity<Vendor>(vend, HttpStatus.OK );
+			return new  ResponseEntity<Vendor>(vend, HttpStatus.CREATED );
 		}
 		else {
 			return new  ResponseEntity<Vendor>(HttpStatus.INTERNAL_SERVER_ERROR );
@@ -79,7 +84,7 @@ public class VendorController {
 			return new  ResponseEntity<Vendor>(vendor, HttpStatus.OK);
 		}
 		else {
-			return new  ResponseEntity<Vendor>( HttpStatus.NO_CONTENT);
+			return new  ResponseEntity<Vendor>( HttpStatus.NOT_FOUND);
 		}
 	}
 }

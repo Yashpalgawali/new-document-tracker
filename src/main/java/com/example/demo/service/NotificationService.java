@@ -15,5 +15,5 @@ public interface NotificationService {
 	
 	public int updateNotification(Notification notification);
 	
-	public List<Notification> getAllActiveNotifications(int status);
+	public List<Notification> getAllActiveNotifications();
 }

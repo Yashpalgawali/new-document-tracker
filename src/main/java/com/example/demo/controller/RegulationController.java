@@ -199,7 +199,6 @@ public class RegulationController {
 	@GetMapping("/{filename}")
 	public ResponseEntity<Resource> downloadFile(@PathVariable("filename") String filename)
 	{
-	
 		return null;
 	}
 

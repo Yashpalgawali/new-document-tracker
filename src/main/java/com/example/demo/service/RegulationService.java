@@ -19,4 +19,6 @@ public interface RegulationService {
 	public List<Regulation> getAllRegulationsByVendorId(Integer id);
 	
 	public List<Regulation> getRegulationsByVendorIdAndRegulationId(Integer vid, Integer rid);
+	
+	public List<Regulation> getExpiredRegulations();
 }

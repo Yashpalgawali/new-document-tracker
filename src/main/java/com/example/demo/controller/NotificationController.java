@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,35 +15,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.models.Activity;
+import com.example.demo.global.GlobalVars;
 import com.example.demo.models.Notification;
-import com.example.demo.service.ActivityService;
 import com.example.demo.service.NotificationService;
 
 @RestController
 @RequestMapping("notification")
 @CrossOrigin("*")
-public class NotificationController {
+public class NotificationController { 
+	
+	private NotificationService notificationserv; 
+	
+	@Autowired
+	public NotificationController(NotificationService notificationserv ) {
+		super();
+		this.notificationserv = notificationserv; 
+	}
 
-	@Autowired
-	private NotificationService notificationserv;
-	
-	@Autowired
-	private ActivityService actserv;
-	
 	@PostMapping("/")
 	public ResponseEntity<Notification> saveNotification(@RequestBody Notification notification)
 	{
 		notification.setStatus(1);
+		notification.setNotification_add_date(GlobalVars.DATE_FORMAT.format(LocalDateTime.now()) );
+		notification.setNotification_add_time(GlobalVars.TIME_FORMAT.format(LocalDateTime.now()) );
 		
 		Notification notify = notificationserv.saveNotification(notification);
 		if(notify!=null) {
-//			activity.setActivity(notification.getNotification_name() +" is saved successfully");
-//			activity.setActivity_date(""+ LocalDateTime.now());
-//			activity.setActivity_time(null);
-//			
-//			actserv.saveActivity(activity);
-			return new ResponseEntity<Notification>(notify , HttpStatus.OK);
+ 
+			return new ResponseEntity<Notification>(notify , HttpStatus.CREATED);
 		}
 		else {
 			return new ResponseEntity<Notification>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -52,9 +50,8 @@ public class NotificationController {
 	}
 	
 	@GetMapping("/")
-	public ResponseEntity<List<Notification>> getAllNotifications()
-	{
-		
+	public ResponseEntity<List<Notification>> getAllNotifications() 
+	{ 
 		List<Notification> allNotifications = notificationserv.getAllNotifications();
 		if(allNotifications.size()>0) {
 			return new ResponseEntity<List<Notification>>(allNotifications , HttpStatus.OK);
@@ -63,8 +60,7 @@ public class NotificationController {
 			return new ResponseEntity<List<Notification>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-
+	 
 	@GetMapping("/edit/{id}")
 	public ResponseEntity<Notification> getNotificationById(@PathVariable("id") Integer id)
 	{
@@ -74,15 +70,14 @@ public class NotificationController {
 			return new ResponseEntity<Notification>(nlist ,HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<Notification>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Notification>(HttpStatus.NOT_MODIFIED);
 		}
-	}
-	
+	} 
 	
 	@GetMapping("/active")
 	public ResponseEntity<List<Notification>> getActiveNotifications()
 	{
-		List<Notification> allNotifications = notificationserv.getAllActiveNotifications(1);
+		List<Notification> allNotifications = notificationserv.getAllActiveNotifications();
 		if(allNotifications.size()>0) {
 			return new ResponseEntity<List<Notification>>(allNotifications , HttpStatus.OK);
 		}
@@ -102,4 +97,6 @@ public class NotificationController {
 			return new ResponseEntity<Notification>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
 }

@@ -20,26 +20,21 @@ import com.example.demo.service.ActivityService;
 @CrossOrigin("*")
 public class ActivityController {
 
+	private ActivityService actserv;
+
 	@Autowired
-	ActivityService actserv;
-	
-	@PostMapping("/")
-	public ResponseEntity<Activity> saveActivity(@RequestBody Activity activity)
-	{
-		Activity act = actserv.saveActivity(activity);
-		if(act!=null) {
-			
-			return new ResponseEntity<Activity>(act , HttpStatus.OK);	
-		}
-		else {
-			return new ResponseEntity<Activity>(HttpStatus.INTERNAL_SERVER_ERROR);	
-		}
+	public ActivityController(ActivityService actserv) {
+		super();
+		this.actserv = actserv;
 	}
-	
+
+
+
 	@GetMapping("/")
 	public ResponseEntity<List<Activity>> getAllActivities()
 	{
-		List<Activity> actlist = actserv.getAllActivities();
+		List<Activity> actlist = actserv.getAllActivities(); 
+		
 		if(actlist.size()>0) {
 			return new ResponseEntity<List<Activity>>(actlist, HttpStatus.OK); 
 		}
