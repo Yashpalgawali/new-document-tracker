@@ -188,9 +188,13 @@ public class RegulationServImpl implements RegulationService {
 	public Regulation getRegualtionById(Integer id) {
 		Optional<Regulation> optional = regulationrepo.findById(id);
 		if(optional.isPresent())
-			return optional.get();
+		{
+			return optional.get(); 
+		}
 		else
+		{
 			return null;
+		}
 	}
 
 	

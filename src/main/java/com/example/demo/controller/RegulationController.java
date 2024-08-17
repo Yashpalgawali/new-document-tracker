@@ -1,17 +1,16 @@
 package com.example.demo.controller;
 
+import org.springframework.http.HttpHeaders;
+
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.http.HttpHeaders;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,10 +20,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -201,5 +198,35 @@ public class RegulationController {
 	{
 		return null;
 	}
+	
+	
+	 @GetMapping("/pdf/id/{id}")
+	    public ResponseEntity<Resource> getPdf(@PathVariable("id")Integer id) {
+	        try {
+	        	Regulation reg = regulationserv.getRegualtionById(id); 
+	        	if(reg!=null)
+	        	{ 
+		        	// Construct the absolute path to the file
+		            String filePath = reg.getFile_path() + "/" + reg.getFile_name();
+		            Resource pdfFile = new FileSystemResource(filePath);
+		            
+		            if (!pdfFile.exists()) {
+		                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		            }
+		        			 
+		            HttpHeaders headers = new HttpHeaders();
+		            String encodedFilename = URLEncoder.encode(reg.getFile_name(), "UTF-8");
+		            headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + encodedFilename + "\"");
+		            headers.setContentType(MediaType.APPLICATION_PDF); // Set MIME type to PDF
+	
+		            return new ResponseEntity<Resource>(pdfFile, headers, HttpStatus.OK);
+	        	}
+	        	else {
+	        		 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	        	}
+	        } catch (Exception e) {
+	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    }
 
 }

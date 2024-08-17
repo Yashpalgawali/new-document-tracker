@@ -49,14 +49,19 @@ public class Regulation {
 	private String file_name;
 	
 	@ManyToOne(cascade =  CascadeType.MERGE , fetch = FetchType.EAGER)
-	
+	@JsonIgnore
 	@JoinColumn(name="vendor_id")
+	@ToString.Exclude
 	private Vendor vendor;
 	
 	@OneToOne(cascade = CascadeType.MERGE , fetch = FetchType.EAGER)
+	@JsonIgnore
 	@JoinColumn(name="regulation_type_id")
+	@ToString.Exclude
 	private RegulationType regulationtype;
 	
 	 @OneToMany(mappedBy = "regulation", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+	 @JsonIgnore
+	 @ToString.Exclude
 	 private List<RegulationHistory> history;
 }
