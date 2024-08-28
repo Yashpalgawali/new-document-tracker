@@ -35,7 +35,7 @@ import com.example.demo.service.VendorService;
 
 @RestController
 @RequestMapping("regulation")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class RegulationController {
 
 	@Value("${spring.application.name}")
@@ -43,16 +43,22 @@ public class RegulationController {
 	
 	@Value("${upload.dir}")
     private String uploadPath;
+	 
+	private RegulationService regulationserv;
 	
-	@Autowired
-	RegulationService regulationserv;
+	private VendorService vendserv;
 	
-	@Autowired
-	VendorService vendserv;
+	private RegulationTypeService regtypeserv;
 	
-	@Autowired
-	RegulationTypeService regtypeserv;
 	
+	public RegulationController(RegulationService regulationserv, VendorService vendserv,
+			RegulationTypeService regtypeserv) {
+		super();
+		this.regulationserv = regulationserv;
+		this.vendserv = vendserv;
+		this.regtypeserv = regtypeserv;
+	}
+
 	@PostMapping("/")
     public ResponseEntity<Regulation> saveRegulation(
             @RequestParam("regulation_name") String regulation_name,
@@ -181,8 +187,6 @@ public class RegulationController {
 		Vendor vend = vendserv.getVendorById(2);
 		regulate.setVendor(vend);
 		
-		System.err.println("INside update regulation()\n "+regulate.toString());
-		
 		int res = regulationserv.updateRegulation(regulate, file);
 		if(res>0) {
 			return new ResponseEntity<Regulation>(HttpStatus.OK);
@@ -191,14 +195,7 @@ public class RegulationController {
 			return new ResponseEntity<Regulation>(HttpStatus.NOT_MODIFIED);
 		}	
 	}
-	
-	
-	@GetMapping("/{filename}")
-	public ResponseEntity<Resource> downloadFile(@PathVariable("filename") String filename)
-	{
-		return null;
-	}
-	
+ 	
 	
 	 @GetMapping("/pdf/id/{id}")
 	    public ResponseEntity<Resource> getPdf(@PathVariable("id")Integer id) {
@@ -213,12 +210,16 @@ public class RegulationController {
 		            if (!pdfFile.exists()) {
 		                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		            }
-		        			 
+		        	
 		            HttpHeaders headers = new HttpHeaders();
-		            String encodedFilename = URLEncoder.encode(reg.getFile_name(), "UTF-8");
+		           // String encodedFilename = URLEncoder.encode(reg.getFile_name(), "UTF-8");
+		            
+		            String encodedFilename = reg.getFile_name() ;  
 		            headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + encodedFilename + "\"");
 		            headers.setContentType(MediaType.APPLICATION_PDF); // Set MIME type to PDF
-	
+
+		            System.out.println("Content-Disposition: " + headers.getFirst(HttpHeaders.CONTENT_DISPOSITION));
+
 		            return new ResponseEntity<Resource>(pdfFile, headers, HttpStatus.OK);
 	        	}
 	        	else {
