@@ -10,9 +10,14 @@ import com.example.demo.repository.ActivityRepository;
 @Service
 public class ActivityServImpl implements ActivityService {
 
-	@Autowired
-	ActivityRepository actrepo;
+	private ActivityRepository actrepo;
 	
+	@Autowired
+	public ActivityServImpl(ActivityRepository actrepo) {
+		super();
+		this.actrepo = actrepo;
+	}
+
 	@Override
 	public Activity saveActivity(Activity activity) {
 		return actrepo.save(activity);
@@ -20,7 +25,6 @@ public class ActivityServImpl implements ActivityService {
 
 	@Override
 	public List<Activity> getAllActivities() {
-
 		return actrepo.findAll();
 	}
 

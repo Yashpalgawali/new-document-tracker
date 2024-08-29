@@ -19,6 +19,8 @@ public class RegulationDTO {
 	
 	private String regulation_issued_date;
 	
+	private String next_renewal_date;
+	
 	private String file_path;
 	
 	private String file_name;

@@ -10,8 +10,10 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.global.GlobalVars;
 import com.example.demo.models.Activity;
 import com.example.demo.models.Regulation;
 import com.example.demo.models.RegulationHistory;
@@ -35,16 +38,22 @@ public class RegulationServImpl implements RegulationService {
 	@Value("${upload.dir}")
     private String uploadPath;
 	
-	@Autowired
 	RegulationRepository regulationrepo;
 	
-	@Autowired
 	RegulationHistoryRepo regulatehistrepo;
 
-	@Autowired
-	ActivityService actserv;
+	private ActivityService actserv;
 	
-    // Format the date and time if necessary
+	@Autowired
+    public RegulationServImpl(RegulationRepository regulationrepo, RegulationHistoryRepo regulatehistrepo,
+			ActivityService actserv) {
+		super();
+		this.regulationrepo = regulationrepo;
+		this.regulatehistrepo = regulatehistrepo;
+		this.actserv = actserv;
+	}
+
+	// Format the date and time if necessary
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     
@@ -160,7 +169,6 @@ public class RegulationServImpl implements RegulationService {
 	    	 activity.setActivity_date(currentDate.format(dateFormatter));
 	    	 activity.setActivity_time(currentTime.format(timeFormatter));
 	    	 actserv.saveActivity(activity);
-	    	 
 	     }
 	     
 	     RegulationHistory rhist = new RegulationHistory();
@@ -187,12 +195,10 @@ public class RegulationServImpl implements RegulationService {
 	@Override
 	public Regulation getRegualtionById(Integer id) {
 		Optional<Regulation> optional = regulationrepo.findById(id);
-		if(optional.isPresent())
-		{
+		if(optional.isPresent()) {
 			return optional.get(); 
 		}
-		else
-		{
+		else {
 			return null;
 		}
 	}
@@ -205,8 +211,7 @@ public class RegulationServImpl implements RegulationService {
 	     String filepath = "";  
 
 	     File uploadDirectory = new File(uploadPath);
-	     if(!uploadDirectory.exists())
-	     {
+	     if(!uploadDirectory.exists()) {
 	    	 boolean created = uploadDirectory.mkdirs();
     		 if(created) {
     			 
@@ -237,20 +242,17 @@ public class RegulationServImpl implements RegulationService {
     			 }
     		 }
 	     }
-	     else    {
+	     else {
 	    	 File vendorDir = new File(uploadPath+File.separator+regulation.getVendor().getVendor_id() +File.separator+ regulation.getRegulationtype().getRegulation_type() );
 	    	 filepath = vendorDir.getAbsolutePath();
 	    	 
 	    	 Path filePath =  Paths.get(vendorDir.getAbsolutePath(),filename);
-	    	 
 	    	 filePath = getUniqueFilePath(filePath); // This will Get new file name if the file already exists
-			
-			 filename =filePath.getFileName().toString();
+	    	 filename =filePath.getFileName().toString();
 			 
 	    	 if(!vendorDir.exists()) {
 				 boolean vcreatedir = vendorDir.mkdirs();
-				 if(vcreatedir)
-				 {
+				 if(vcreatedir) {
 					 try(InputStream inputStream = file.getInputStream()) {
 							Files.copy(inputStream , filePath );
 						} catch (IOException e) {
@@ -288,7 +290,6 @@ public class RegulationServImpl implements RegulationService {
 	    	 activity.setActivity_date(currentDate.format(dateFormatter));
 	    	 activity.setActivity_time(currentTime.format(timeFormatter));
 	    	 actserv.saveActivity(activity);
-	    	 
 	     }
 	     
 	     RegulationHistory rhist = new RegulationHistory();
@@ -309,7 +310,6 @@ public class RegulationServImpl implements RegulationService {
 
 	@Override
 	public List<Regulation> getAllRegulationsByVendorId(Integer id) {
-		
 		return regulationrepo.getRegulationByVendorId(id);
 	}
 
@@ -320,9 +320,21 @@ public class RegulationServImpl implements RegulationService {
 
 	@Override
 	public List<Regulation> getExpiredRegulations() {
-	
 		
-		return null;
+		List<Regulation> reglist = regulationrepo.findAll();
+        
+        // Current date for comparison
+        LocalDate today = LocalDate.now();
+ 
+        List<Regulation> explist = reglist.stream().filter(reg->{
+				 
+				 // Parse the next_renewal_date to LocalDate using the custom formatter
+	            LocalDate entryDate = LocalDate.parse(reg.getNext_renewal_date(), dateFormatter);
+	            // Check if the date is before today
+	            return entryDate.isBefore(today);
+						 
+				}).collect(Collectors.toList());
+		return explist;
 	}
 
 }

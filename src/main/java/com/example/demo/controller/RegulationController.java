@@ -66,6 +66,7 @@ public class RegulationController {
             @RequestParam("regulation_frequency")  String regulation_frequency,
             @RequestParam("regulation_type_id")  Integer regulation_type_id,
             @RequestParam("regulation_issued_date")  String regulation_issued_date,
+            @RequestParam("next_renewal_date")  String next_renewal_date,
             
             @RequestParam("file") MultipartFile file) {
         // Handle the uploaded file and other data here
@@ -76,7 +77,7 @@ public class RegulationController {
 		regulate.setRegulation_description(regulation_description);
 		regulate.setRegulation_frequency(regulation_frequency);
 		regulate.setRegulation_issued_date(regulation_issued_date);
-		
+		regulate.setNext_renewal_date(next_renewal_date);	
 		RegulationType regtype = regtypeserv.getRegulationTypeById(regulation_type_id);
 		
 		regulate.setRegulationtype(regtype);
@@ -93,7 +94,6 @@ public class RegulationController {
 		else {
 			return new ResponseEntity<Regulation>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
     }
 	
 	// Using the DTO class
@@ -112,6 +112,7 @@ public class RegulationController {
 			rdto.setRegulation_description(regulation.getRegulation_description());
 			rdto.setRegulation_frequency(regulation.getRegulation_frequency());
 			rdto.setRegulation_issued_date(regulation.getRegulation_issued_date());
+			rdto.setNext_renewal_date(regulation.getNext_renewal_date());
 			rdto.setFile_name(regulation.getFile_name());
 			rdto.setFile_path(regulation.getFile_path());
 			rdto.setVendor(regulation.getVendor());
@@ -230,4 +231,16 @@ public class RegulationController {
 	        }
 	    }
 
+	 @GetMapping("/expired/regulation/")
+	 public ResponseEntity<List<Regulation>> getExpiredRegulations(){
+ 	     
+		 List<Regulation> expiredList = regulationserv.getExpiredRegulations();
+		 
+		 if(expiredList.size()>0) {
+			 return new ResponseEntity<List<Regulation>>(expiredList, HttpStatus.OK);
+		 }
+		 else {
+			 return new ResponseEntity<List<Regulation>>(HttpStatus.NO_CONTENT);
+		 }
+	 }
 }
