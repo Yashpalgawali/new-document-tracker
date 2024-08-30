@@ -153,8 +153,8 @@ public class RegulationController {
 	}
 	
 	
+	// This method will return the regulation of a particular vendor by vendor ID and regulation ID
 	@GetMapping("/vendor/{id}/regulation/{rid}")
-	// This method will return the regulation of a particular vendor by vendor ID and regulation ID 
 	public ResponseEntity<List<Regulation>> getRegulationsByVendorIdAndRegulationId(@PathVariable("id")Integer id,@PathVariable("rid")Integer rid)
 	{
 		List<Regulation> reglist = regulationserv.getRegulationsByVendorIdAndRegulationId(id, rid);
@@ -170,6 +170,7 @@ public class RegulationController {
             @RequestParam("regulation_frequency")  String regulation_frequency,
             @RequestParam("regulation_type_id")  Integer regulation_type_id,
             @RequestParam("regulation_issued_date")  String regulation_issued_date,
+            @RequestParam("next_renewal_date")  String next_renewal_date,
             @RequestParam("regulation_id") Integer regulation_id,
             @RequestParam("file") MultipartFile file)
 	{
@@ -180,6 +181,7 @@ public class RegulationController {
 		regulate.setRegulation_description(regulation_description);
 		regulate.setRegulation_frequency(regulation_frequency);
 		regulate.setRegulation_issued_date(regulation_issued_date);
+		regulate.setNext_renewal_date(next_renewal_date);
 		
 		RegulationType regtype = regtypeserv.getRegulationTypeById(regulation_type_id);
 		
@@ -243,4 +245,6 @@ public class RegulationController {
 			 return new ResponseEntity<List<Regulation>>(HttpStatus.NO_CONTENT);
 		 }
 	 }
+	 
+	
 }

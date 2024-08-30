@@ -12,10 +12,14 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+ 
 @Entity
 @Data
 @AllArgsConstructor
@@ -44,7 +48,7 @@ public class RegulationHistory {
 	@JoinColumn(name="vendor_id")
 	private Vendor vendor;
 	
-	@OneToOne(cascade =  CascadeType.MERGE,fetch = FetchType.LAZY)
+	@OneToOne(cascade =  CascadeType.MERGE)
 	@JoinColumn(name="regulation_id")
 	private Regulation regulation;
 	

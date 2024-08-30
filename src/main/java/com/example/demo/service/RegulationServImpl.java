@@ -207,6 +207,7 @@ public class RegulationServImpl implements RegulationService {
 	@Override
 	public int updateRegulation(Regulation regulation, MultipartFile file) {
 		
+		System.err.println("Inside UPDATE REGULATION \n");
 		 String filename = file.getOriginalFilename();
 	     String filepath = "";  
 
