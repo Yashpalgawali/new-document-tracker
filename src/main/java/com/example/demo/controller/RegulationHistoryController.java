@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.models.Regulation;
 import com.example.demo.models.RegulationHistory;
 import com.example.demo.service.RegulationHistoryService;
 
@@ -27,11 +26,9 @@ public class RegulationHistoryController {
 	}
 
 
-	@GetMapping("history/{id}")
+	@GetMapping("/history/{id}")
 	 public ResponseEntity<List<RegulationHistory>> getRegulationHistoryByRegulationId(@PathVariable("id") Integer id) {
-		 
 		 List<RegulationHistory> reglist = reghistserv.getRegulationHistoryByRegulationId(id);
-		 
 		 return new ResponseEntity<List<RegulationHistory>>(reglist,HttpStatus.OK);
 	 }
 }

@@ -51,9 +51,9 @@ public class Regulation {
 	private String file_name;
 	
 	@ManyToOne(cascade =  CascadeType.MERGE , fetch = FetchType.EAGER)
-	@JsonIgnore
+//	@JsonIgnore
 	@JoinColumn(name="vendor_id")
-	@ToString.Exclude
+	//@ToString.Exclude
 	private Vendor vendor;
 	
 	@OneToOne(cascade = CascadeType.MERGE , fetch = FetchType.EAGER)

@@ -44,8 +44,7 @@ public class RegulationServImpl implements RegulationService {
 
 	private ActivityService actserv;
 	
-	@Autowired
-    public RegulationServImpl(RegulationRepository regulationrepo, RegulationHistoryRepo regulatehistrepo,
+	public RegulationServImpl(RegulationRepository regulationrepo, RegulationHistoryRepo regulatehistrepo,
 			ActivityService actserv) {
 		super();
 		this.regulationrepo = regulationrepo;
@@ -193,7 +192,7 @@ public class RegulationServImpl implements RegulationService {
 	}
 
 	@Override
-	public Regulation getRegualtionById(Integer id) {
+	public Regulation getRegulationById(Integer id) {
 		Optional<Regulation> optional = regulationrepo.findById(id);
 		if(optional.isPresent()) {
 			return optional.get(); 
@@ -278,7 +277,7 @@ public class RegulationServImpl implements RegulationService {
 	    		 					  		regulation.getRegulation_issued_date(), filename, filepath , 
 	    		 					  		regulation.getRegulationtype().getRegulation_type_id() ,
 	    		 					  		regulation.getVendor().getVendor_id(), 
-	    		 					  		regulation.getRegulation_id());
+	    		 					  		regulation.getRegulation_id(),regulation.getNext_renewal_date());
 	     if(result > 0) {
 	    	 Activity activity = new Activity();
 	    	 
@@ -301,6 +300,7 @@ public class RegulationServImpl implements RegulationService {
 	     rhist.setHist_regulation_description(regulation.getRegulation_description());
 	     rhist.setHist_regulation_name(regulation.getRegulation_name());
 	     rhist.setHist_regulation_issued_date(regulation.getRegulation_issued_date());
+	     rhist.setHist_next_renewal_date(regulation.getNext_renewal_date());
 	     rhist.setVendor(regulation.getVendor());
 	     rhist.setRegulation(regulation);
 	     regulatehistrepo.save(rhist);
@@ -334,6 +334,29 @@ public class RegulationServImpl implements RegulationService {
 	            // Check if the date is before today
 	            return entryDate.isBefore(today);
 						 
+				}).collect(Collectors.toList());
+		return explist;
+	}
+
+	@Override
+	public List<Regulation> getExpiredRegulationsByVendorId(Integer vendorid) {
+		List<Regulation> reglist = regulationrepo.findAll();
+        
+        // Current date for comparison
+        LocalDate today = LocalDate.now();
+ 
+        List<Regulation> explist = reglist.stream().filter(reg->{
+				 
+        		if(reg.getVendor().getVendor_id()==vendorid) 
+        		{
+					 // Parse the next_renewal_date to LocalDate using the custom formatter
+		            LocalDate entryDate = LocalDate.parse(reg.getNext_renewal_date(), dateFormatter);
+		            // Check if the date is before today
+		            return entryDate.isBefore(today);
+        		}
+        		else {
+        			return false;
+        		}
 				}).collect(Collectors.toList());
 		return explist;
 	}

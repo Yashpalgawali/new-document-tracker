@@ -2,15 +2,12 @@ package com.example.demo.controller;
 
 import org.springframework.http.HttpHeaders;
 
-import java.io.File;
-import java.net.URLEncoder;
+ 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
+ import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,8 +46,7 @@ public class RegulationController {
 	private VendorService vendserv;
 	
 	private RegulationTypeService regtypeserv;
-	
-	
+	 
 	public RegulationController(RegulationService regulationserv, VendorService vendserv,
 			RegulationTypeService regtypeserv) {
 		super();
@@ -133,7 +129,7 @@ public class RegulationController {
 	@GetMapping("/{id}")
 	public ResponseEntity<Regulation> getRegulationById(@PathVariable("id") Integer id)
 	{
-		Regulation regulation = regulationserv.getRegualtionById(id);
+		Regulation regulation = regulationserv.getRegulationById(id);
 		if(regulation!=null) {
 			return new ResponseEntity<Regulation>(regulation,HttpStatus.OK);
 		}
@@ -203,7 +199,7 @@ public class RegulationController {
 	 @GetMapping("/pdf/id/{id}")
 	    public ResponseEntity<Resource> getPdf(@PathVariable("id")Integer id) {
 	        try {
-	        	Regulation reg = regulationserv.getRegualtionById(id); 
+	        	Regulation reg = regulationserv.getRegulationById(id); 
 	        	if(reg!=null)
 	        	{ 
 		        	// Construct the absolute path to the file
@@ -211,7 +207,7 @@ public class RegulationController {
 		            Resource pdfFile = new FileSystemResource(filePath);
 		            
 		            if (!pdfFile.exists()) {
-		                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		            	return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		            }
 		        	
 		            HttpHeaders headers = new HttpHeaders();
@@ -221,7 +217,7 @@ public class RegulationController {
 		            headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + encodedFilename + "\"");
 		            headers.setContentType(MediaType.APPLICATION_PDF); // Set MIME type to PDF
 
-		            System.out.println("Content-Disposition: " + headers.getFirst(HttpHeaders.CONTENT_DISPOSITION));
+//		            System.out.println("Content-Disposition: " + headers.getFirst(HttpHeaders.CONTENT_DISPOSITION));
 
 		            return new ResponseEntity<Resource>(pdfFile, headers, HttpStatus.OK);
 	        	}
@@ -237,7 +233,7 @@ public class RegulationController {
 	 public ResponseEntity<List<Regulation>> getExpiredRegulations(){
  	     
 		 List<Regulation> expiredList = regulationserv.getExpiredRegulations();
-		 
+		  
 		 if(expiredList.size()>0) {
 			 return new ResponseEntity<List<Regulation>>(expiredList, HttpStatus.OK);
 		 }
@@ -246,5 +242,16 @@ public class RegulationController {
 		 }
 	 }
 	 
-	
+	 @GetMapping("/expired/regulation/vendor/{id}")
+	 public ResponseEntity<List<Regulation>> getExpiredRegulationsByVendorId(@PathVariable("id") Integer id){
+ 	     
+		 List<Regulation> expiredList = regulationserv.getExpiredRegulations();
+		 
+		 if(expiredList.size()>0) {
+			 return new ResponseEntity<List<Regulation>>(expiredList, HttpStatus.OK);
+		 }
+		 else {
+			 return new ResponseEntity<List<Regulation>>(HttpStatus.NO_CONTENT);
+		 }
+	 }
 }

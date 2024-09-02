@@ -12,7 +12,7 @@ public interface RegulationService {
 	
 	public List<Regulation> getAllRegulations();
 	
-	public Regulation getRegualtionById(Integer id);
+	public Regulation getRegulationById(Integer id);
 	
 	public int updateRegulation(Regulation regulation, MultipartFile file);
 	
@@ -21,4 +21,6 @@ public interface RegulationService {
 	public List<Regulation> getRegulationsByVendorIdAndRegulationId(Integer vid, Integer rid);
 	
 	public List<Regulation> getExpiredRegulations();
+	
+	public List<Regulation> getExpiredRegulationsByVendorId(Integer vendorid);
 }

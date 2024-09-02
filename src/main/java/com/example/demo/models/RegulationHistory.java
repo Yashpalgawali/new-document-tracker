@@ -40,6 +40,8 @@ public class RegulationHistory {
 	
 	private String hist_regulation_issued_date;
 	
+	private String hist_next_renewal_date;
+	
 	private String hist_file_path;
 	 
 	private String hist_file_name; 

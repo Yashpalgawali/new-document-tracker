@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.models.RegulationHistory;
 import com.example.demo.repository.RegulationHistoryRepo;
 
 @Service("reghistserv")
@@ -17,20 +18,20 @@ public class RegulationHistoryServImpl implements RegulationHistoryService {
 		this.regulatehistrepo = regulatehistrepo;
 	}
 
-
 	@Override
-	public List<com.example.demo.models.RegulationHistory> getRegulationHistoryByRegulationId(Integer id) {
-		// TODO Auto-generated method stub
-		List<com.example.demo.models.RegulationHistory> reglist = regulatehistrepo.findAll().stream().filter(reg-> {
-													if(reg.getHist_regulation_id()==id) {
-														return true;
-													} 
-													else 
-														return false;
-											}).collect(Collectors.toList());
-		reglist.stream().forEach(System.err::println);
+	public List<RegulationHistory> getRegulationHistoryByRegulationId(Integer id) {
 		
-		return  reglist;
+		List<RegulationHistory> reglist =
+				regulatehistrepo.findAll()
+									.stream()
+									  .filter(reg-> {
+											if(reg.getRegulation().getRegulation_id() ==id) {
+												return true;
+											} 
+											else 
+												return false;
+									}).collect(Collectors.toList());
+		return reglist;
 	}
 
 }
