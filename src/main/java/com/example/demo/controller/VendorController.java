@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +17,7 @@ import com.example.demo.models.UserType;
 import com.example.demo.models.Vendor;
 import com.example.demo.service.UserService;
 import com.example.demo.service.VendorService;
-
+ 
 @RequestMapping("vendor")
 @CrossOrigin("*")
 @RestController
@@ -28,7 +27,6 @@ public class VendorController {
 	
 	private UserService userserv;
 	
-	@Autowired	
 	public VendorController(VendorService vendserv, UserService userserv) {
 		super();
 		this.vendserv = vendserv;

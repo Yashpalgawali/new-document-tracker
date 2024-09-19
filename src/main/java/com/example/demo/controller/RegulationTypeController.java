@@ -2,9 +2,11 @@ package com.example.demo.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,9 +24,13 @@ import com.example.demo.service.RegulationTypeService;
 @RequestMapping("regulationtype")
 public class RegulationTypeController {
 
-	@Autowired
-	RegulationTypeService regulationtypeserv;
+	private RegulationTypeService regulationtypeserv;
 	
+	public RegulationTypeController(RegulationTypeService regulationtypeserv) {
+		super();
+		this.regulationtypeserv = regulationtypeserv;
+	}
+
 	@PostMapping("/")
 	public ResponseEntity<RegulationType> saveRegulationType(@RequestBody RegulationType rtype)
 	{
@@ -37,9 +43,15 @@ public class RegulationTypeController {
 		}
 	}
 	
+	@GetMapping("/csrf-token")
+	public CsrfToken getCsrfToken(HttpServletRequest request) {
+		return (CsrfToken) request.getAttribute("_csrf");
+	}
+	
 	@GetMapping("/")
-	public ResponseEntity<List<RegulationType>> getAllRegulationTypes()
+	public ResponseEntity<List<RegulationType>> getAllRegulationTypes(HttpServletRequest request)
 	{
+		request.getAttribute("_csrf");
 		List<RegulationType> rtypelist = regulationtypeserv.getAllRegulationTypes();
 		if(rtypelist.size()>0) {
 			return new ResponseEntity<List<RegulationType>>(rtypelist,HttpStatus.OK);

@@ -34,6 +34,7 @@ public class Vendor {
 	
 	private String vendor_name;
 	
+	
 	private String vendor_email;
 	 
 	@Transient
