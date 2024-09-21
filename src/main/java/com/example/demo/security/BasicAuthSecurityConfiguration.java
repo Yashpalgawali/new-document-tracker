@@ -1,7 +1,11 @@
 package com.example.demo.security;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
@@ -13,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-//@Configuration
+@Configuration
 public class BasicAuthSecurityConfiguration {
 	
 	@Bean
@@ -33,29 +37,22 @@ public class BasicAuthSecurityConfiguration {
 			logout.logoutUrl("/logout").logoutSuccessUrl("/login");
 			
 		});
-		return http.build();
+		return http.build(); 
 	}
 	
-	@Bean
-	public UserDetailsService userDetailsService() {
-		
-		UserDetails user1 = User.withUsername("in28minutes")
-				//.password("{noop}dummy")
-				.password("dummy")
-				.passwordEncoder(str -> passwordEncoder().encode(str)  )
-				.roles("USER")
-				.build();
-		
-		UserDetails admin = User.withUsername("admin")
-				//.password("{noop}dummy")
-				.password("dummy")
-				.passwordEncoder(str -> passwordEncoder().encode(str)  )
-				.roles("ADMIN","USER")
-				.build();
-		 
-		return new InMemoryUserDetailsManager(user1 ,admin);
-	}
+	@Autowired
+	private DataSource dataSource;
 	
+	@Autowired
+	public void configBasicAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+		
+		auth
+			.jdbcAuthentication()
+			.dataSource(dataSource)
+			.usersByUsernameQuery("select username,password,enabled from tbl_user where username=?")
+			.authoritiesByUsernameQuery("select username,role FROM tbl_user WHERE username=?");
+	}
+  
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(); 

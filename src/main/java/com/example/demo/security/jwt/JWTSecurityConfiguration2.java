@@ -33,7 +33,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
-@Configuration
+//@Configuration
 public class JWTSecurityConfiguration2 {
 	
 	@Autowired
@@ -58,7 +58,7 @@ public class JWTSecurityConfiguration2 {
 			
 		});
 		
-		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);	
+		//http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);	
 		
 		return http.build();
 	}
@@ -73,51 +73,49 @@ public class JWTSecurityConfiguration2 {
 					;
 	}
 	
-
-	
-	@Bean
-	public KeyPair keyPair() {
-	       KeyPairGenerator keypairgenerator = null;
-		try {
-			keypairgenerator = KeyPairGenerator.getInstance("RSA");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-	       keypairgenerator.initialize(2048);
-	       return keypairgenerator.generateKeyPair();
-	}
-
-	@Bean 
-	public RSAKey rsaKey(KeyPair keyPair) {
-		return new RSAKey.Builder((RSAPublicKey) keyPair.getPublic()).privateKey(keyPair.getPrivate())
-			.keyID(UUID.randomUUID().toString())
-			.build();
-
-	}
-
-	@Bean
-	public JWKSource<SecurityContext> jwkSource(RSAKey rsaKey){
-		var jwkset = new JWKSet(rsaKey);
-
-//		new JWKSource() {
-//			@Override
-//			public List get(JWKSelector jwkSelector, SecurityContext context) throws KeySourceException {
-//				return jwkSelector.select(jwkset);
-//			}
-//		};
-		return (jwkSelector , context) -> jwkSelector.select(jwkset);
-	}
-
-	@Bean
-	public JwtDecoder jwtDecoder(RSAKey rsaKey) throws JOSEException {
-		return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
-	} 
-
-	
-	@Bean
-	public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
-		return new NimbusJwtEncoder(jwkSource);
-	}
+//	@Bean
+//	public KeyPair keyPair() {
+//	       KeyPairGenerator keypairgenerator = null;
+//		try {
+//			keypairgenerator = KeyPairGenerator.getInstance("RSA");
+//		} catch (NoSuchAlgorithmException e) {
+//			e.printStackTrace();
+//		}
+//	       keypairgenerator.initialize(2048);
+//	       return keypairgenerator.generateKeyPair();
+//	}
+//
+//	@Bean 
+//	public RSAKey rsaKey(KeyPair keyPair) {
+//		return new RSAKey.Builder((RSAPublicKey) keyPair.getPublic()).privateKey(keyPair.getPrivate())
+//			.keyID(UUID.randomUUID().toString())
+//			.build();
+//
+//	}
+//
+//	@Bean
+//	public JWKSource<SecurityContext> jwkSource(RSAKey rsaKey){
+//		var jwkset = new JWKSet(rsaKey);
+//
+////		new JWKSource() {
+////			@Override
+////			public List get(JWKSelector jwkSelector, SecurityContext context) throws KeySourceException {
+////				return jwkSelector.select(jwkset);
+////			}
+////		};
+//		return (jwkSelector , context) -> jwkSelector.select(jwkset);
+//	}
+//
+//	@Bean
+//	public JwtDecoder jwtDecoder(RSAKey rsaKey) throws JOSEException {
+//		return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
+//	} 
+//
+//	
+//	@Bean
+//	public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
+//		return new NimbusJwtEncoder(jwkSource);
+//	}
 	
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
