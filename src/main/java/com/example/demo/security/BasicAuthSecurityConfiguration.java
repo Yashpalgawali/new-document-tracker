@@ -27,14 +27,14 @@ public class BasicAuthSecurityConfiguration {
 		});
 		//http.formLogin();
 		
-		http.sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 		
 		http.httpBasic();
 		
 		http.csrf(csrf -> csrf.disable());
 		
 		http.logout(logout->{ 
-			logout.logoutUrl("/logout").logoutSuccessUrl("/login");
+			logout.logoutUrl("/logout");
 			
 		});
 		return http.build(); 
@@ -58,15 +58,17 @@ public class BasicAuthSecurityConfiguration {
 		return new BCryptPasswordEncoder(); 
 	}
 	
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			public void addCorsMappings(CorsRegistry registry ) {
-				
-				registry.addMapping("/**")
-						.allowedMethods("*")
-						.allowedOrigins("http://localhost:4200");
-			}
-		};
-	}
+//	@Bean
+//	public WebMvcConfigurer corsConfigurer() {
+//		//System.err.println("Inside WebMvcConfigurer cors config() \n");
+//		return new WebMvcConfigurer() {
+//			public void addCorsMappings(CorsRegistry registry ) {
+//				
+//				registry.addMapping("/**")
+//						.allowedMethods("OPTIONS","GET","POST","PUT","DELETE","PATCH")
+//						.allowedOrigins("http://localhost:4200")
+//						.allowedHeaders("OPTIONs");
+//			}
+//		};
+//	}
 }
