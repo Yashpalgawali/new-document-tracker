@@ -6,7 +6,10 @@ import org.springframework.http.HttpHeaders;
 import java.util.ArrayList;
 import java.util.List;
 
- import org.springframework.beans.factory.annotation.Value;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Value;
  import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -32,7 +35,6 @@ import com.example.demo.service.VendorService;
 
 @RestController
 @RequestMapping("regulation")
-@CrossOrigin(origins = "http://localhost:4200")
 public class RegulationController {
 
 	@Value("${spring.application.name}")
@@ -42,13 +44,10 @@ public class RegulationController {
     private String uploadPath;
 	 
 	private RegulationService regulationserv;
-	
 	private VendorService vendserv;
-	
 	private RegulationTypeService regtypeserv;
 	 
-	public RegulationController(RegulationService regulationserv, VendorService vendserv,
-			RegulationTypeService regtypeserv) {
+	public RegulationController(RegulationService regulationserv, VendorService vendserv, RegulationTypeService regtypeserv) {
 		super();
 		this.regulationserv = regulationserv;
 		this.vendserv = vendserv;
@@ -64,10 +63,12 @@ public class RegulationController {
             @RequestParam("regulation_issued_date")  String regulation_issued_date,
             @RequestParam("next_renewal_date")  String next_renewal_date,
             
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam("file") MultipartFile file,HttpServletRequest request) {
         // Handle the uploaded file and other data here
         // For example, save the file to a local directory
-
+		
+		HttpSession sess = request.getSession();
+		
 		Regulation regulate = new Regulation();
 		regulate.setRegulation_name(regulation_name);
 		regulate.setRegulation_description(regulation_description);
@@ -78,9 +79,8 @@ public class RegulationController {
 		
 		regulate.setRegulationtype(regtype);
 		
-		Vendor vend = vendserv.getVendorById(2);
+		Vendor vend = vendserv.getVendorById(Integer.parseInt(""+sess.getAttribute("vendor_id")));
 		regulate.setVendor(vend);
-		
 		
 		Regulation reg = regulationserv.saveRegulation(regulate,file);
 		if(reg!=null) {

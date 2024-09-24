@@ -3,7 +3,6 @@ package com.example.demo.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.global.GlobalVars;
@@ -15,12 +14,10 @@ import com.example.demo.repository.UserRepository;
 @Service("userserv")
 public class UserServiceImpl implements UserService {
 
-	
 	private UserRepository userrepo;
 	
 	private ActivityRepository actrepo;
 	
-	@Autowired
 	public UserServiceImpl(UserRepository userrepo, ActivityRepository actrepo) {
 		super();
 		this.userrepo = userrepo;
@@ -64,4 +61,9 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
+	public User getUserByUserName(String username) {
+
+		return userrepo.findByUsername(username);
+	}
 }

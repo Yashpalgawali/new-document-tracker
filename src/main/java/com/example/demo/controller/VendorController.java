@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,20 +18,21 @@ import com.example.demo.models.UserType;
 import com.example.demo.models.Vendor;
 import com.example.demo.service.UserService;
 import com.example.demo.service.VendorService;
- 
+
 @RequestMapping("vendor")
 @CrossOrigin("*")
 @RestController
 public class VendorController {
  
 	private VendorService vendserv;
-	
 	private UserService userserv;
+	private BCryptPasswordEncoder passEncoder;
 	
-	public VendorController(VendorService vendserv, UserService userserv) {
+	public VendorController(VendorService vendserv, UserService userserv,BCryptPasswordEncoder passEncoder) {
 		super();
 		this.vendserv = vendserv;
 		this.userserv = userserv;
+		this.passEncoder=passEncoder;
 	}
 
 	@PostMapping("/")
@@ -40,7 +42,7 @@ public class VendorController {
 		
 		user.setEmail(vendor.getVendor_email());
 		user.setUsername(vendor.getUsername());
-		user.setPassword(vendor.getPassword());
+		user.setPassword(passEncoder.encode(vendor.getPassword()));
 		user.setEnabled(1);
 		user.setRole("vendor");
 		
@@ -54,6 +56,7 @@ public class VendorController {
 		userserv.saveUser(user);
 		
 		vendor.setUser(user);
+		
 		vendor.setEnabled(1);		
 		Vendor vend = vendserv.saveVendor(vendor);
 		if(vend!=null) { 
@@ -78,6 +81,18 @@ public class VendorController {
 	public ResponseEntity<Vendor> getVendorById(@PathVariable("id") Integer id) {
 		
 		Vendor vendor = vendserv.getVendorById(id);
+		if(vendor!=null) {
+			return new  ResponseEntity<Vendor>(vendor, HttpStatus.OK);
+		}
+		else {
+			return new  ResponseEntity<Vendor>( HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@GetMapping("/user/{id}")
+	public ResponseEntity<Vendor> getVendorByUserId(@PathVariable("id") Integer id) {
+		
+		Vendor vendor = vendserv.getVendorByUserId(id);
 		if(vendor!=null) {
 			return new  ResponseEntity<Vendor>(vendor, HttpStatus.OK);
 		}

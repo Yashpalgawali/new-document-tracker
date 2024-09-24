@@ -4,27 +4,28 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.global.GlobalVars;
 import com.example.demo.models.Activity;
+import com.example.demo.models.User;
 import com.example.demo.models.Vendor;
 import com.example.demo.repository.ActivityRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VendorRepository;
 
 @Service("vendserv")
 public class VendorServImpl implements VendorService {
  	
 	private VendorRepository vendrepo;
-	
 	private ActivityRepository actrepo;
+	private UserRepository userrepo;
 	
-	@Autowired
-	public VendorServImpl(VendorRepository vendrepo, ActivityRepository actrepo) {
+	public VendorServImpl(VendorRepository vendrepo, ActivityRepository actrepo,UserRepository userrepo) {
 		super();
 		this.vendrepo = vendrepo;
 		this.actrepo = actrepo;
+		this.userrepo=userrepo;
 	}
 	
 	@Override
@@ -55,7 +56,6 @@ public class VendorServImpl implements VendorService {
 	public Vendor getVendorById(Integer id) {
 		Optional<Vendor> vendor = vendrepo.findById(id);
 		if(vendor!=null) {
-			
 			return vendor.get();
 		}
 		else {
@@ -65,8 +65,14 @@ public class VendorServImpl implements VendorService {
 
 	@Override
 	public Vendor updateVendor(Vendor vendor) {
-		// TODO Auto-generated method stub
+		 
 		return null;
+	}
+
+	@Override
+	public Vendor getVendorByUserId(Integer userid) {
+		User user = userrepo.findById(userid).get();
+		return vendrepo.findByUser(user);
 	}
 
 }

@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +20,6 @@ import com.example.demo.models.RegulationType;
 import com.example.demo.service.RegulationTypeService;
 
 @RestController
-@CrossOrigin("*")
 @RequestMapping("regulationtype")
 public class RegulationTypeController {
 
@@ -48,6 +47,7 @@ public class RegulationTypeController {
 		return (CsrfToken) request.getAttribute("_csrf");
 	}
 	
+	//@PreAuthorize("hasAnyRole('ROLE_VENDOR','ROLE_ADMIN')")
 	@GetMapping("/")
 	public ResponseEntity<List<RegulationType>> getAllRegulationTypes(HttpServletRequest request)
 	{

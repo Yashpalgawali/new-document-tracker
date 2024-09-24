@@ -11,6 +11,10 @@ public interface VendorService {
 	public List<Vendor> getAllVendors();
 	
 	public Vendor getVendorById(Integer id);
+	
+	public Vendor getVendorByUserId(Integer userid);
 
 	public Vendor updateVendor(Vendor vendor);
+	
+	 
 }
