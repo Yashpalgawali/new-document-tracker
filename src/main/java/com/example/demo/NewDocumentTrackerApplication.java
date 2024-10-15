@@ -10,4 +10,5 @@ public class NewDocumentTrackerApplication {
 		SpringApplication.run(NewDocumentTrackerApplication.class, args);
 	}
 
+
 }

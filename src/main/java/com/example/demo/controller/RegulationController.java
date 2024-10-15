@@ -9,12 +9,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
  import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +40,9 @@ import com.example.demo.service.VendorService;
 @RequestMapping("regulation")
 public class RegulationController {
 
+	@Autowired
+	HttpSession sess;
+	
 	@Value("${spring.application.name}")
     private String contextPath;
 	
@@ -67,7 +73,9 @@ public class RegulationController {
         // Handle the uploaded file and other data here
         // For example, save the file to a local directory
 		
-		HttpSession sess = request.getSession();
+		sess = request.getSession();
+		
+		System.err.println("\n inside regulation controller "+sess.getId() +" \n Vendor ID in session is "+sess.getAttribute("vendor_id"));
 		
 		Regulation regulate = new Regulation();
 		regulate.setRegulation_name(regulation_name);
@@ -79,6 +87,7 @@ public class RegulationController {
 		
 		regulate.setRegulationtype(regtype);
 		
+		//Vendor vend = vendserv.getVendorById(Integer.parseInt(""+sess.getAttribute("vendor_id")));
 		Vendor vend = vendserv.getVendorById(Integer.parseInt(""+sess.getAttribute("vendor_id")));
 		regulate.setVendor(vend);
 		
@@ -94,8 +103,14 @@ public class RegulationController {
 	
 	// Using the DTO class
 	@GetMapping(value= "/")
-	public ResponseEntity<List<RegulationDTO>> getAllRegulations()
+	public ResponseEntity<List<RegulationDTO>> getAllRegulations(HttpServletRequest request)
 	{
+		//sess = request.getSession();
+		System.err.println("Inside getAllRegulation() \n session ID = "+sess.getId()+"\n vendor ID in session is "+sess.getAttribute("vendor_id"));
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		System.err.println("Auth Obj "+auth.toString());
+		
 		List<Regulation> reglist = regulationserv.getAllRegulations();
 		
 		List<RegulationDTO> regulationDTOs = new ArrayList<>();

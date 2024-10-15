@@ -24,7 +24,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @Entity
 @SequenceGenerator(name = "vendor_seq" ,allocationSize = 1, initialValue = 1)
-
 @Table(name="tbl_vendor")
 public class Vendor {
 

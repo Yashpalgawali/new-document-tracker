@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,6 +35,7 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
 //@Configuration
+//@EnableMethodSecurity(prePostEnabled = true)
 public class JWTSecurityConfiguration2 {
 	
 	@Autowired
@@ -41,22 +43,24 @@ public class JWTSecurityConfiguration2 {
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.httpBasic();
 		http.authorizeHttpRequests(auth ->{
 			auth.anyRequest().authenticated();
 		});
 		//http.formLogin();
 		
-		http.sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-		
-		http.httpBasic();
-		
-		//http.csrf(csrf -> csrf.disable());
-		
-		http.csrf().disable();
-		http.logout(logout->{ 
-			logout.logoutUrl("/logout").logoutSuccessUrl("/login");
-			
-		});
+		http.sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+		 
+	 	http.csrf().disable();
+//		http.logout(logout->{ 
+//			logout.logoutUrl("/logout").logoutSuccessUrl("/login");
+//		});
+	 	http
+		.logout()
+		.logoutUrl("/logout")
+		.logoutSuccessUrl("/") // Redirect after successful logout
+		.deleteCookies("SESSION")
+		.invalidateHttpSession(true);
 		
 		//http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);	
 		

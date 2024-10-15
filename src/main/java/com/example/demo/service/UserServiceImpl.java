@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUserById(Integer id) {
 		
+//		return userrepo.findById(id).orElse(null);
 		Optional<User> uobject = userrepo.findById(id);
 		if(uobject!=null) {
 			return uobject.get();

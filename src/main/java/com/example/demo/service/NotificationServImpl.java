@@ -20,7 +20,6 @@ public class NotificationServImpl implements NotificationService {
 	
 	private ActivityRepository actrepo;
 
-	@Autowired
 	public NotificationServImpl(NotificationRepository notificationrepo, ActivityRepository actrepo) {
 		super();
 		this.notificationrepo = notificationrepo;
