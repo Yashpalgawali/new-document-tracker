@@ -87,10 +87,15 @@
 	</dependencies>
 
 	<build>
+	<finalName>documenttrackerrest</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<source>16</source>
+					<target>17</target>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

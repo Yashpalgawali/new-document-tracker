@@ -178,6 +178,7 @@ public class RegulationServImpl implements RegulationService {
 	     rhist.setHist_regulation_description(regulation.getRegulation_description());
 	     rhist.setHist_regulation_name(regulation.getRegulation_name());
 	     rhist.setHist_regulation_issued_date(regulation.getRegulation_issued_date());
+	     rhist.setHist_next_renewal_date(regulation.getNext_renewal_date());
 	     rhist.setVendor(regulation.getVendor());
 	     rhist.setRegulation(regulation);
 	     regulatehistrepo.save(rhist);
