@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import org.springframework.http.HttpHeaders;
 
- 
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -260,7 +258,7 @@ public class RegulationController {
 	 @GetMapping("/expired/regulation/vendor/{id}")
 	 public ResponseEntity<List<Regulation>> getExpiredRegulationsByVendorId(@PathVariable("id") Integer id){
  	     
-		 List<Regulation> expiredList = regulationserv.getExpiredRegulations();
+		 List<Regulation> expiredList = regulationserv.getExpiredRegulationsByVendorId(id);
 		 
 		 if(expiredList.size()>0) {
 			 return new ResponseEntity<List<Regulation>>(expiredList, HttpStatus.OK);
