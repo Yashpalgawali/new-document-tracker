@@ -2,15 +2,20 @@ package com.example.demo.controller;
 
 import org.springframework.http.HttpHeaders;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
  import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,10 +31,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.exporttoexcel.ExportRegulationHistory;
+import com.example.demo.exporttoexcel.ExportRegulations;
 import com.example.demo.models.Regulation;
 import com.example.demo.models.RegulationDTO;
+import com.example.demo.models.RegulationHistory;
 import com.example.demo.models.RegulationType;
 import com.example.demo.models.Vendor;
+import com.example.demo.service.RegulationHistoryService;
 import com.example.demo.service.RegulationService;
 import com.example.demo.service.RegulationTypeService;
 import com.example.demo.service.VendorService;
@@ -50,12 +59,15 @@ public class RegulationController {
 	private RegulationService regulationserv;
 	private VendorService vendserv;
 	private RegulationTypeService regtypeserv;
-	 
-	public RegulationController(RegulationService regulationserv, VendorService vendserv, RegulationTypeService regtypeserv) {
+	private RegulationHistoryService reghistserv;
+
+	public RegulationController(RegulationService regulationserv, VendorService vendserv,
+			RegulationTypeService regtypeserv, RegulationHistoryService reghistserv) {
 		super();
 		this.regulationserv = regulationserv;
 		this.vendserv = vendserv;
 		this.regtypeserv = regtypeserv;
+		this.reghistserv = reghistserv;
 	}
 
 	@PostMapping("/")
@@ -267,4 +279,43 @@ public class RegulationController {
 			 return new ResponseEntity<List<Regulation>>(HttpStatus.NO_CONTENT);
 		 }
 	 }
+	 
+	 @GetMapping("/export")
+	 public ResponseEntity<InputStreamResource> exportAllRegulationsToExcel(HttpServletResponse response) throws IOException{
+		 
+		 List<Regulation> reglist = regulationserv.getAllRegulations();
+		 
+		 HttpHeaders headers = new HttpHeaders();
+		 String fname = "Active Regulation List_"+LocalDate.now();
+		 
+		 headers.add(HttpHeaders.CONTENT_DISPOSITION," attachment; filename="+fname);
+		 
+		 ExportRegulations regulation = new ExportRegulations(reglist);
+		 byte[] excelContent = regulation.export(response);
+		 
+		 return ResponseEntity.ok()
+				 .headers(headers)
+				 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+				 .body(new InputStreamResource(new ByteArrayInputStream(excelContent)));
+	 }
+	 
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
