@@ -1,7 +1,5 @@
 package com.example.demo.controller;
 
-import org.springframework.http.HttpHeaders;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -14,9 +12,10 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
- import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +30,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.exporttoexcel.ExportRegulationHistory;
+import com.example.demo.exporttoexcel.ExportExpiredRegulations;
 import com.example.demo.exporttoexcel.ExportRegulations;
 import com.example.demo.models.Regulation;
 import com.example.demo.models.RegulationDTO;
-import com.example.demo.models.RegulationHistory;
 import com.example.demo.models.RegulationType;
 import com.example.demo.models.Vendor;
 import com.example.demo.service.RegulationHistoryService;
@@ -72,14 +70,14 @@ public class RegulationController {
 
 	@PostMapping("/")
     public ResponseEntity<Regulation> saveRegulation(
-            @RequestParam("regulation_name") String regulation_name,
-            @RequestParam("regulation_description") String regulation_description,
-            @RequestParam("regulation_frequency")  String regulation_frequency,
-            @RequestParam("regulation_type_id")  Integer regulation_type_id,
-            @RequestParam("regulation_issued_date")  String regulation_issued_date,
-            @RequestParam("next_renewal_date")  String next_renewal_date,
+            @RequestParam String regulation_name,
+            @RequestParam String regulation_description,
+            @RequestParam  String regulation_frequency,
+            @RequestParam  Integer regulation_type_id,
+            @RequestParam  String regulation_issued_date,
+            @RequestParam  String next_renewal_date,
             
-            @RequestParam("file") MultipartFile file,HttpServletRequest request) {
+            @RequestParam MultipartFile file,HttpServletRequest request) {
         // Handle the uploaded file and other data here
         // For example, save the file to a local directory
 		
@@ -152,7 +150,7 @@ public class RegulationController {
 	
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Regulation> getRegulationById(@PathVariable("id") Integer id)
+	public ResponseEntity<Regulation> getRegulationById(@PathVariable Integer id)
 	{
 		Regulation regulation = regulationserv.getRegulationById(id);
 		if(regulation!=null) {
@@ -164,9 +162,11 @@ public class RegulationController {
 	}
 	
 	@GetMapping("/vendor/{id}")
-	public ResponseEntity<List<Regulation>> getAllRegulationsByVendorId(@PathVariable("id")Integer id)
+	public ResponseEntity<List<Regulation>> getAllRegulationsByVendorId(@PathVariable Integer id)
 	{
 		List<Regulation> reglist = regulationserv.getAllRegulationsByVendorId(id);
+		System.err.println("get regulation by vendor ID "+id+"\n Size of list is "+reglist.size());
+		reglist.stream().forEach(e->System.err.println(e.toString()));
 		if(reglist.size()>0)
 			return new ResponseEntity<List<Regulation>>(reglist, HttpStatus.OK);
 		else
@@ -176,7 +176,7 @@ public class RegulationController {
 	
 	// This method will return the regulation of a particular vendor by vendor ID and regulation ID
 	@GetMapping("/vendor/{id}/regulation/{rid}")
-	public ResponseEntity<List<Regulation>> getRegulationsByVendorIdAndRegulationId(@PathVariable("id")Integer id,@PathVariable("rid")Integer rid)
+	public ResponseEntity<List<Regulation>> getRegulationsByVendorIdAndRegulationId(@PathVariable Integer id,@PathVariable Integer rid)
 	{
 		List<Regulation> reglist = regulationserv.getRegulationsByVendorIdAndRegulationId(id, rid);
 		if(reglist.size()>0)
@@ -186,16 +186,17 @@ public class RegulationController {
 	}
 	
 	@PutMapping("/")
-	public ResponseEntity<Regulation> updateRegulationById( @RequestParam("regulation_name") String regulation_name,
-            @RequestParam("regulation_description") String regulation_description,
-            @RequestParam("regulation_frequency")  String regulation_frequency,
-            @RequestParam("regulation_type_id")  Integer regulation_type_id,
-            @RequestParam("regulation_issued_date")  String regulation_issued_date,
-            @RequestParam("next_renewal_date")  String next_renewal_date,
-            @RequestParam("regulation_id") Integer regulation_id,
-            @RequestParam("file") MultipartFile file)
+	public ResponseEntity<Regulation> updateRegulationById( @RequestParam String regulation_name,
+            @RequestParam String regulation_description,
+            @RequestParam  String regulation_frequency,
+            @RequestParam  Integer regulation_type_id,
+            @RequestParam  String regulation_issued_date,
+            @RequestParam  String next_renewal_date,
+            @RequestParam Integer regulation_id,
+            @RequestParam MultipartFile file ,HttpServletRequest request)
 	{
-
+		sess = request.getSession();
+		
 		Regulation regulate = new Regulation();
 		regulate.setRegulation_id(regulation_id);
 		regulate.setRegulation_name(regulation_name);
@@ -208,7 +209,7 @@ public class RegulationController {
 		
 		regulate.setRegulationtype(regtype);
 		
-		Vendor vend = vendserv.getVendorById(2);
+		Vendor vend = vendserv.getVendorById(Integer.parseInt(""+sess.getAttribute("vendor_id")));
 		regulate.setVendor(vend);
 		
 		int res = regulationserv.updateRegulation(regulate, file);
@@ -222,7 +223,7 @@ public class RegulationController {
  	
 	
 	 @GetMapping("/pdf/id/{id}")
-	    public ResponseEntity<Resource> getPdf(@PathVariable("id")Integer id) {
+	    public ResponseEntity<Resource> getPdf(@PathVariable Integer id) {
 	        try {
 	        	Regulation reg = regulationserv.getRegulationById(id); 
 	        	if(reg!=null)
@@ -268,7 +269,7 @@ public class RegulationController {
 	 }
 	 
 	 @GetMapping("/expired/regulation/vendor/{id}")
-	 public ResponseEntity<List<Regulation>> getExpiredRegulationsByVendorId(@PathVariable("id") Integer id){
+	 public ResponseEntity<List<Regulation>> getExpiredRegulationsByVendorId(@PathVariable Integer id){
  	     
 		 List<Regulation> expiredList = regulationserv.getExpiredRegulationsByVendorId(id);
 		 
@@ -299,23 +300,56 @@ public class RegulationController {
 				 .body(new InputStreamResource(new ByteArrayInputStream(excelContent)));
 	 }
 	 
+	 @GetMapping("/export/{id}")
+	 public ResponseEntity<InputStreamResource> exportAllRegulationsByVendorIdToExcel(HttpServletResponse response,@PathVariable Integer id) throws IOException{
+		 
+		 List<Regulation> reglist = regulationserv.getAllRegulationsByVendorId(id);
+		 
+		 HttpHeaders headers = new HttpHeaders();
+		 String fname = "Active Regulation List_"+LocalDate.now();
+		 
+		 headers.add(HttpHeaders.CONTENT_DISPOSITION," attachment; filename="+fname);
+		 
+		 ExportRegulations regulation = new ExportRegulations(reglist);
+		 byte[] excelContent = regulation.export(response);
+		 
+		 return ResponseEntity.ok()
+				 .headers(headers)
+				 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+				 .body(new InputStreamResource(new ByteArrayInputStream(excelContent)));
+	 }
+	 
+	 
+	 @GetMapping("/expired/export/{usertype}/{vendorid}")
+	 public ResponseEntity<InputStreamResource> exportExpiredRegulationsToExcel(HttpServletResponse response,@PathVariable Integer usertype,@PathVariable Integer vendorid) throws IOException{
+		 List<Regulation> reglist = null;
+		 if(usertype==1)
+		 {
+			 System.err.println("this is ADMIN");
+			reglist  = regulationserv.getExpiredRegulations();
+		 }
+		 else {
+			 System.err.println("this is vendor");
+			 reglist  = regulationserv.getExpiredRegulationsByVendorId(vendorid);
+			 reglist.stream().forEach(e->System.err.println(e));
+		 }
+		 
+		 HttpHeaders headers = new HttpHeaders();
+		 String fname = "Expired Regulations List-"+LocalDate.now();
+		 
+		 headers.add(HttpHeaders.CONTENT_DISPOSITION," attachment; filename="+fname);
+		 
+		 ExportExpiredRegulations regulation = new ExportExpiredRegulations(reglist);
+		 byte[] excelContent = regulation.export(response);
+		 
+		 return ResponseEntity.ok()
+				 .headers(headers)
+				 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+				 .body(new InputStreamResource(new ByteArrayInputStream(excelContent)));
+	 }
+	 
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
