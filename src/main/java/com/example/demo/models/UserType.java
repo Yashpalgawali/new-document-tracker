@@ -7,15 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 @Entity
 @Table(name="tbl_user_type")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @SequenceGenerator(name = "user_type_seq" , allocationSize = 1, initialValue = 1)
 public class UserType {
 
@@ -24,4 +17,32 @@ public class UserType {
 	private Integer user_type_id;
 	
 	private String user_type;
+
+	public Integer getUser_type_id() {
+		return user_type_id;
+	}
+
+	public void setUser_type_id(Integer user_type_id) {
+		this.user_type_id = user_type_id;
+	}
+
+	public String getUser_type() {
+		return user_type;
+	}
+
+	public void setUser_type(String user_type) {
+		this.user_type = user_type;
+	}
+
+	public UserType(Integer user_type_id, String user_type) {
+		super();
+		this.user_type_id = user_type_id;
+		this.user_type = user_type;
+	}
+
+	public UserType() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 }
