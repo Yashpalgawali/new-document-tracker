@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.exceptions.VendorNotFoundException;
 import com.example.demo.global.GlobalVars;
 import com.example.demo.models.Activity;
 import com.example.demo.models.User;
@@ -54,23 +55,24 @@ public class VendorServImpl implements VendorService {
 
 	@Override
 	public Vendor getVendorById(Integer id) {
-		Optional<Vendor> vendor = vendrepo.findById(id);
-		if(vendor!=null) {
-			return vendor.get();
-		}
-		else {
-			return null;
-		}
+		return vendrepo.findById(id)
+								 	.orElseThrow(() -> new VendorNotFoundException(" Vendor not found for ID "+id) );
+//		if(vendor!=null) {
+//			return vendor.get();
+//		}	
+//		else {
+//			return null;
+//		}
 	}
 
 	@Override
-	public Vendor updateVendor(Vendor vendor) {
-		 
-		return null;
+	public int updateVendor(Vendor vendor) {
+ 		return vendrepo.updateVendor(vendor.getVendor_name(), vendor.getVendor_email(), vendor.getUser().getUserid(), vendor.getEnabled(), vendor.getVendor_id());
 	}
 
 	@Override
 	public Vendor getVendorByUserId(Integer userid) {
+		userrepo.findById(userid).orElseThrow(()-> new VendorNotFoundException("No user/Vendor found for given ID "+userid));
 		User user = userrepo.findById(userid).get();
 		return vendrepo.findByUser(user);
 	}

@@ -59,6 +59,7 @@ public class VendorController {
 		
 		vendor.setEnabled(1);		
 		Vendor vend = vendserv.saveVendor(vendor);
+		 
 		if(vend!=null) { 
 			return new  ResponseEntity<Vendor>(vend, HttpStatus.CREATED );
 		}
@@ -78,19 +79,15 @@ public class VendorController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Vendor> getVendorById(@PathVariable("id") Integer id) {
+	public ResponseEntity<Vendor> getVendorById(@PathVariable  Integer id) {
 		
 		Vendor vendor = vendserv.getVendorById(id);
-		if(vendor!=null) {
-			return new  ResponseEntity<Vendor>(vendor, HttpStatus.OK);
-		}
-		else {
-			return new  ResponseEntity<Vendor>( HttpStatus.NOT_FOUND);
-		}
+		return new  ResponseEntity<>(vendor, HttpStatus.OK);
+		 
 	}
 	
 	@GetMapping("/user/{id}")
-	public ResponseEntity<Vendor> getVendorByUserId(@PathVariable("id") Integer id) {
+	public ResponseEntity<Vendor> getVendorByUserId(@PathVariable  Integer id) {
 		
 		Vendor vendor = vendserv.getVendorByUserId(id);
 		if(vendor!=null) {

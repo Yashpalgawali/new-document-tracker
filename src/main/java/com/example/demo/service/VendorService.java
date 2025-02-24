@@ -14,7 +14,7 @@ public interface VendorService {
 	
 	public Vendor getVendorByUserId(Integer userid);
 
-	public Vendor updateVendor(Vendor vendor);
+	public int updateVendor(Vendor vendor);
 	
 	 
 }

@@ -90,7 +90,7 @@ public class BasicAuthenticationConfiguration {
      
 	
 	@Bean
-	public BCryptPasswordEncoder passEncoder() {
+	 BCryptPasswordEncoder passEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 }
