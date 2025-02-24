@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException  ex ){
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value() ,"Resource Not Found", ex.getMessage(),LocalDateTime.now());
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value() ,"User Not Found", ex.getMessage(),LocalDateTime.now());
 		return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
 	}
 	
