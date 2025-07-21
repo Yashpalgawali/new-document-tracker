@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.models.User;
 import com.example.demo.service.UserService;
 
@@ -17,39 +17,27 @@ import com.example.demo.service.UserService;
 @RequestMapping("users")
 public class UserController {
 
-	
-	private UserService userserv;
+	private final UserService userserv;
 
 	public UserController(UserService userserv) {
 		super();
 		this.userserv = userserv;
 	}
-	
 
 	@GetMapping("/{userid}")
-	public ResponseEntity<User> findUserById(@PathVariable Integer userid)
-	{
+	public ResponseEntity<User> findUserById(@PathVariable Long userid) throws ResourceNotFoundException {
 		User user = userserv.getUserById(userid);
-		if(user!=null) {
-		
-			return  new ResponseEntity<User>(user, HttpStatus.OK);
-		}
-		else {
-			throw new UserNotFoundException("User Is not found");
-			//return  new ResponseEntity<User>(HttpStatus.NOT_FOUND);
-		}
+		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/")
-	public ResponseEntity<String> changePassword(@RequestBody User user){
-		
-		System.err.println("inside changePassword");
+	public ResponseEntity<String> changePassword(@RequestBody User user) {
+
 		int res = userserv.updateUserPassword(user);
-		if(res > 0) {
+		if (res > 0) {
 			return new ResponseEntity<String>("Password is updated successfully", HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<String>("Password is not updated", HttpStatus.NOT_MODIFIED );
+		} else {
+			return new ResponseEntity<String>("Password is not updated", HttpStatus.NOT_MODIFIED);
 		}
 	}
 }

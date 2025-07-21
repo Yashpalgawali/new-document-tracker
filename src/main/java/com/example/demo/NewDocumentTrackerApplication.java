@@ -9,6 +9,4 @@ public class NewDocumentTrackerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(NewDocumentTrackerApplication.class, args);
 	}
-
-
 }

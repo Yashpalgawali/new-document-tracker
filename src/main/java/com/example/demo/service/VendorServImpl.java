@@ -2,12 +2,13 @@ package com.example.demo.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.example.demo.exceptions.VendorNotFoundException;
+import com.example.demo.exceptions.GlobalException;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.global.GlobalVars;
 import com.example.demo.models.Activity;
 import com.example.demo.models.User;
@@ -19,22 +20,29 @@ import com.example.demo.repository.VendorRepository;
 
 @Service("vendserv")
 public class VendorServImpl implements VendorService {
+//	private final UserRepository userrepo;
+	private final VendorRepository vendrepo;
+	private final ActivityRepository actrepo;
+	private final UserService userserv;
+	private final BCryptPasswordEncoder passEncoder;
 
-	private VendorRepository vendrepo;
-	private ActivityRepository actrepo;
-	private UserRepository userrepo;
-	private BCryptPasswordEncoder passEncoder;
-
-	public VendorServImpl(VendorRepository vendrepo, ActivityRepository actrepo, UserRepository userrepo,
+	/**
+	 * @param vendrepo
+	 * @param actrepo
+	 * @param userserv
+	 * @param passEncoder
+	 */
+	public VendorServImpl(VendorRepository vendrepo, ActivityRepository actrepo, UserService userserv,
 			BCryptPasswordEncoder passEncoder) {
+		super();
 		this.vendrepo = vendrepo;
 		this.actrepo = actrepo;
-		this.userrepo = userrepo;
+		this.userserv = userserv;
 		this.passEncoder = passEncoder;
-
 	}
 
 	@Override
+	@Transactional
 	public Vendor saveVendor(Vendor vendor) {
 
 		User user = new User();
@@ -52,43 +60,61 @@ public class VendorServImpl implements VendorService {
 
 		user.setUsertype(utype);
 
-		userrepo.save(user);
+		User savedUser = userserv.saveUser(user);
 
-		vendor.setUser(user);
+		if (savedUser != null) {
+			vendor.setUser(user);
+			vendor.setEnabled(1);
 
-		vendor.setEnabled(1);
-		
-		System.err.println("Inside saveVendor() service \n "+ vendor.toString());
-		Vendor vend = vendrepo.save(vendor);
-		if (vend != null) {
+			Vendor vend = vendrepo.save(vendor);
 
+			if (vend != null) {
+
+				Activity act = new Activity();
+
+				act.setActivity("Vendor " + vendor.getVendor_name() + " is saved successfully");
+				act.setActivity_date(GlobalVars.DATE_FORMAT.format(LocalDateTime.now()));
+				act.setActivity_time(GlobalVars.TIME_FORMAT.format(LocalDateTime.now()));
+				actrepo.save(act);
+				return vend;
+			}
+			else {
+				Activity act = new Activity();
+
+				act.setActivity("Vendor " + vendor.getVendor_name() + " is not saved ");
+				act.setActivity_date(GlobalVars.DATE_FORMAT.format(LocalDateTime.now()));
+				act.setActivity_time(GlobalVars.TIME_FORMAT.format(LocalDateTime.now()));
+				actrepo.save(act);
+				throw new GlobalException("User "+user.getUsername()+" is not saved");
+			}
+			
+		} 
+		else {
 			Activity act = new Activity();
 
-			act.setActivity("Vendor " + vendor.getVendor_name() + " is saved successfully");
+			act.setActivity("User " + vendor.getVendor_name() + " is not saved ");
 			act.setActivity_date(GlobalVars.DATE_FORMAT.format(LocalDateTime.now()));
 			act.setActivity_time(GlobalVars.TIME_FORMAT.format(LocalDateTime.now()));
-
 			actrepo.save(act);
-
+			
+			throw new GlobalException("User "+user.getUsername()+" is not saved");
 		}
-		return vend;
+
 	}
 
 	@Override
 	public List<Vendor> getAllVendors() {
 
-		return vendrepo.findAll();
+		List<Vendor> vendorList = vendrepo.findAll();
+		if(vendorList.size()>0) {
+			return vendorList;
+		}
+		throw new ResourceNotFoundException("No vendor found");
 	}
 
 	@Override
-	public Vendor getVendorById(Integer id) {
-		return vendrepo.findById(id).orElseThrow(() -> new VendorNotFoundException(" Vendor not found for ID " + id));
-//		if(vendor!=null) {
-//			return vendor.get();
-//		}	
-//		else {
-//			return null;
-//		}
+	public Vendor getVendorById(Integer id) throws ResourceNotFoundException {
+		return vendrepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(" Vendor not found for ID " + id));
 	}
 
 	@Override
@@ -98,11 +124,10 @@ public class VendorServImpl implements VendorService {
 	}
 
 	@Override
-	public Vendor getVendorByUserId(Integer userid) {
-		userrepo.findById(userid)
-				.orElseThrow(() -> new VendorNotFoundException("No user/Vendor found for given ID " + userid));
-		User user = userrepo.findById(userid).get();
-		return vendrepo.findByUser(user);
+	public Vendor getVendorByUserId(Long userid) {
+		 
+		User user = userserv.getUserById(userid);
+		return vendrepo.findByUser(user).orElseThrow(()-> new ResourceNotFoundException("No vendor found for given User ID "+userid) ) ;		
 	}
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.ResponseDto;
 import com.example.demo.models.RegulationType;
 import com.example.demo.service.RegulationTypeService;
 
@@ -31,15 +32,10 @@ public class RegulationTypeController {
 	}
 
 	@PostMapping("/")
-	public ResponseEntity<RegulationType> saveRegulationType(@RequestBody RegulationType rtype)
+	public ResponseEntity<ResponseDto> saveRegulationType(@RequestBody RegulationType rtype)
 	{
-		RegulationType regtype = regulationtypeserv.saveRegulationType(rtype);
-		if(regtype!=null) {
-			return new ResponseEntity<RegulationType>(regtype,HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<RegulationType>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		regulationtypeserv.saveRegulationType(rtype);		
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto(HttpStatus.CREATED.toString(),"Regulation Type "+rtype.getRegulation_type()+" is saved successfully"));		
 	}
 	
 	@GetMapping("/csrf-token")
@@ -47,41 +43,24 @@ public class RegulationTypeController {
 		return (CsrfToken) request.getAttribute("_csrf");
 	}
 	
-	//@PreAuthorize("hasAnyRole('ROLE_VENDOR','ROLE_ADMIN')")
 	@GetMapping("/")
 	public ResponseEntity<List<RegulationType>> getAllRegulationTypes(HttpServletRequest request)
 	{
-		request.getAttribute("_csrf");
 		List<RegulationType> rtypelist = regulationtypeserv.getAllRegulationTypes();
-		if(rtypelist.size()>0) {
-			return new ResponseEntity<List<RegulationType>>(rtypelist,HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<List<RegulationType>>(HttpStatus.NO_CONTENT);
-		}
+		return new ResponseEntity<List<RegulationType>>(rtypelist,HttpStatus.OK);		
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<RegulationType> getRegulationTypeById(@PathVariable("id") Integer id)
+	public ResponseEntity<RegulationType> getRegulationTypeById(@PathVariable Integer id)
 	{
-		RegulationType rtype = regulationtypeserv.getRegulationTypeById(id);
-		if(rtype!=null) {
-			return new ResponseEntity<RegulationType>(rtype,HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<RegulationType>(HttpStatus.NOT_FOUND);
-		}
+		RegulationType rtype = regulationtypeserv.getRegulationTypeById(id);		 
+		return ResponseEntity.status(HttpStatus.OK).body(rtype);		 
 	}
 	
 	@PutMapping("/")
-	public ResponseEntity<RegulationType> updateRegulationType(@RequestBody RegulationType rtype)
+	public ResponseEntity<ResponseDto> updateRegulationType(@RequestBody RegulationType rtype)
 	{
-		int regtype = regulationtypeserv.updateRegulationType(rtype);
-		if(regtype> 0) {
-			return new ResponseEntity<RegulationType>(regulationtypeserv.getRegulationTypeById(rtype.getRegulation_type_id()) ,HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<RegulationType>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		regulationtypeserv.updateRegulationType(rtype);
+		return  ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(HttpStatus.OK.toString(),"Regulation Type "+rtype.getRegulation_type()+" is updated successfully"));		
 	}
 }

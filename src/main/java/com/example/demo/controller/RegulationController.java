@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exporttoexcel.ExportExpiredRegulations;
 import com.example.demo.exporttoexcel.ExportRegulations;
 import com.example.demo.models.Regulation;
@@ -54,10 +55,10 @@ public class RegulationController {
 	@Value("${upload.dir}")
 	private String uploadPath;
 
-	private RegulationService regulationserv;
-	private VendorService vendserv;
-	private RegulationTypeService regtypeserv;
-	private RegulationHistoryService reghistserv;
+	private final RegulationService regulationserv;
+	private final VendorService vendserv;
+	private final RegulationTypeService regtypeserv;
+	private final RegulationHistoryService reghistserv;
 
 	public RegulationController(RegulationService regulationserv, VendorService vendserv,
 			RegulationTypeService regtypeserv, RegulationHistoryService reghistserv) {
@@ -74,7 +75,7 @@ public class RegulationController {
 			@RequestParam Integer regulation_type_id, @RequestParam String regulation_issued_date,
 			@RequestParam String next_renewal_date,
 
-			@RequestParam MultipartFile file, HttpServletRequest request) {
+			@RequestParam MultipartFile file, HttpServletRequest request) throws NumberFormatException, ResourceNotFoundException {
 		// Handle the uploaded file and other data here
 		// For example, save the file to a local directory
 
@@ -97,7 +98,6 @@ public class RegulationController {
 
 		Regulation reg = regulationserv.saveRegulation(regulate, file);
 		if (reg != null) {
-
 			return new ResponseEntity<Regulation>(reg, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<Regulation>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -175,7 +175,7 @@ public class RegulationController {
 			@RequestParam String regulation_description, @RequestParam String regulation_frequency,
 			@RequestParam Integer regulation_type_id, @RequestParam String regulation_issued_date,
 			@RequestParam String next_renewal_date, @RequestParam Integer regulation_id,
-			@RequestParam MultipartFile file, HttpServletRequest request) {
+			@RequestParam MultipartFile file, HttpServletRequest request) throws NumberFormatException, ResourceNotFoundException {
 		sess = request.getSession();
 
 		Regulation regulate = new Regulation();

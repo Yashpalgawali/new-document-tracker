@@ -15,8 +15,11 @@ import com.example.demo.models.Notification;
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
 
 	
-	@Query("SELECT n FROM Notification n WHERE n.status=:status")
-	public List<Notification> getAllActiveNotifications(int status);
+//	@Query("SELECT n FROM Notification n WHERE n.status=:status")
+//	public List<Notification> getAllActiveNotifications(int status);
+	
+	@Query("SELECT n FROM Notification n WHERE n.status=1")
+	public List<Notification> getAllActiveNotifications();
 	
 	@Modifying
 	@Transactional

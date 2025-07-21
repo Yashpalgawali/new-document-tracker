@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,11 +12,10 @@ import com.example.demo.models.Activity;
 import com.example.demo.service.ActivityService;
 
 @RestController
-@RequestMapping("activity")
-@CrossOrigin("*")
+@RequestMapping("activity") 
 public class ActivityController {
 
-	private ActivityService actserv;
+	private final ActivityService actserv;
 	 
 	public ActivityController(ActivityService actserv) {
 		super();

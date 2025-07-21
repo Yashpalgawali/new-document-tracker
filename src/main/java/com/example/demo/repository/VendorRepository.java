@@ -1,5 +1,7 @@
 package com.example.demo.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,10 +15,10 @@ import com.example.demo.models.Vendor;
 public interface VendorRepository extends JpaRepository<Vendor, Integer> {
 
 	
-	public Vendor findByUser(User user);
+	public Optional<Vendor> findByUser(User user);
 	
 	@Transactional
 	@Modifying
 	@Query("UPDATE Vendor v SET v.vendor_name=:vendor_name,v.vendor_email=:vendor_email,v.user.userid=:user_id,v.enabled=:enabled WHERE v.vendor_id=:vid")
-	public int updateVendor(String vendor_name,String vendor_email,Integer user_id,Integer enabled,Integer vid);
+	public int updateVendor(String vendor_name,String vendor_email,Long user_id,Integer enabled,Integer vid);
 }

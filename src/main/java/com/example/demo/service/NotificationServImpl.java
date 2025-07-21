@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.exceptions.GlobalException;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.global.GlobalVars;
 import com.example.demo.models.Activity;
 import com.example.demo.models.Notification;
@@ -29,6 +31,10 @@ public class NotificationServImpl implements NotificationService {
 	@Override
 	public Notification saveNotification(Notification notification) {
 		
+		notification.setStatus(1);
+		notification.setNotification_add_date(GlobalVars.DATE_FORMAT.format(LocalDateTime.now()) );
+		notification.setNotification_add_time(GlobalVars.TIME_FORMAT.format(LocalDateTime.now()) );
+		
 		Notification notif = notificationrepo.save(notification);
 		if(notif!=null) {
 			Activity act = new Activity();
@@ -44,26 +50,24 @@ public class NotificationServImpl implements NotificationService {
 			act.setActivity_date(GlobalVars.DATE_FORMAT.format(LocalDateTime.now()) );
 			act.setActivity_time(GlobalVars.TIME_FORMAT.format(LocalDateTime.now()) );
 			actrepo.save(act);
-			return notif;
+			throw new GlobalException("Notification "+notification.getNotification_name()+" is not saved");
 		}
 		
 	}
   
 	@Override
 	public List<Notification> getAllNotifications() {
-		return notificationrepo.findAll();
+		
+		List<Notification> notificationList = notificationrepo.findAll();
+		if(notificationList.size()>0) {
+			return notificationList;
+		}
+		throw new ResourceNotFoundException("No Notifications found");
 	}
 
 	@Override
 	public Notification getNotificationById(Integer nid) {
-		
-		Optional<Notification> notification = notificationrepo.findById(nid);
-		if(!notification.isEmpty()) {
-			return notification.get();
-		}
-		else {
-			return null;
-		}
+		return notificationrepo.findById(nid).orElseThrow(()-> new ResourceNotFoundException("No notification found for given ID "+nid));
 	}
 
 	@Override
@@ -78,10 +82,11 @@ public class NotificationServImpl implements NotificationService {
 		}
 		else {
 			Activity act = new Activity();
-			act.setActivity("Notification "+ notification.getNotification_name()  +" is not updated ");
+			act.setActivity("Notification "+ notification.getNotification_name()+" is not updated ");
 			act.setActivity_date(GlobalVars.DATE_FORMAT.format(LocalDateTime.now()) );
 			act.setActivity_time(GlobalVars.TIME_FORMAT.format(LocalDateTime.now()) );
 			actrepo.save(act);
+			throw new GlobalException("Notification "+notification.getNotification_name()+" is not updated");
 		}
 		return result;
 	}
@@ -89,7 +94,13 @@ public class NotificationServImpl implements NotificationService {
 	@Override
 	public List<Notification> getAllActiveNotifications() {
 		 
- 		return notificationrepo.getAllActiveNotifications(1);
+ 		List<Notification> notificationList = notificationrepo.getAllActiveNotifications();
+ 		if(notificationList.size() > 0) {
+ 			return notificationList;
+ 		}
+ 		else {
+ 			throw new ResourceNotFoundException("No Active Notifications found");
+ 		}
 	}
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.models.User;
 import com.example.demo.models.Vendor;
 import com.example.demo.service.UserService;
@@ -21,20 +22,9 @@ import com.example.demo.service.VendorService;
 //@SessionAttributes("session_id") // Indicate which model attributes should be stored in the session
 public class LoginController {
 
-//	@GetMapping("basicauth")
-//	public String authenticateBean(Authentication auth)
-//	{System.err.println("successful");
-//		return "Successful";
-//	}
- 
-//	@GetMapping("basicauth")
-//	public AuthenticationBean authenticateBean(Authentication auth)
-//	{ 
-//		return new AuthenticationBean("Authticated successfully");
-//	}
- 
-	private UserService userservice;
-	private VendorService vendorserv;
+
+	private final UserService userservice;
+	private final VendorService vendorserv;
 
 	public LoginController(UserService userservice, VendorService vendorserv) {
 		super();
@@ -48,7 +38,7 @@ public class LoginController {
 	//@GetMapping("basicauth")
 //	public User homePage(HttpServletRequest request) {
 	@PostMapping("basicauth")
-	public User homePage(Authentication auth,HttpServletRequest request) {
+	public User homePage(Authentication auth,HttpServletRequest request) throws ResourceNotFoundException {
 		auth = SecurityContextHolder.getContext().getAuthentication();
 		System.err.println("Logged in user is = "+auth.toString()+"\n session in request obj "+request.getSession().getId());
 		session = request.getSession();
@@ -65,16 +55,16 @@ public class LoginController {
 	
 	//@GetMapping("basicauth")
 	//public User authenticateBean(Authentication auth,HttpServletRequest request, Model model)
-	public User authenticateBean(HttpServletRequest request)
+	public User authenticateBean(HttpServletRequest request) throws ResourceNotFoundException
 	{
 		
-		 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	        session = request.getSession();
-	        String sessionId = session.getId();
-	       
-	        session.setAttribute("session_id", sessionId); // Store session ID in HttpSession
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        session = request.getSession();
+        String sessionId = session.getId();
+       
+        session.setAttribute("session_id", sessionId); // Store session ID in HttpSession
 
-	        System.err.println("Inside Authenticate() Session ID set: " + sessionId); // Debugging output
+        System.err.println("Inside Authenticate() Session ID set: " + sessionId); // Debugging output
  
 		
 		session = request.getSession();
@@ -86,7 +76,7 @@ public class LoginController {
 		System.err.println("Inside basic auth USER= "+user.toString());
 		
 		//Vendor vendor = vendorserv.getVendorByUserId(user.getUserid());
-		Vendor vendor = vendorserv.getVendorByUserId(2);
+		Vendor vendor = vendorserv.getVendorByUserId(2L);
 		System.err.println("Inside basic auth VENDOR= "+vendor.toString());
 		
 		session.setAttribute("vendor_id", vendor.getVendor_id());
