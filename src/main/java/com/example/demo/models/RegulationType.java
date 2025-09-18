@@ -7,16 +7,15 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-
 @Entity
-@Table(name="tbl_regulation_type")
-@SequenceGenerator(name = "regulation_type_seq",allocationSize = 1 , initialValue = 1)
+@Table(name = "tbl_regulation_type")
+@SequenceGenerator(name = "regulation_type_seq", allocationSize = 1, initialValue = 1)
 public class RegulationType {
-	
+
 	@Id
-	@GeneratedValue(generator = "regulation_type_seq",strategy = GenerationType.AUTO)
+	@GeneratedValue(generator = "regulation_type_seq", strategy = GenerationType.AUTO)
 	private Integer regulation_type_id;
-	
+
 	private String regulation_type;
 
 	public Integer getRegulation_type_id() {
@@ -44,5 +43,13 @@ public class RegulationType {
 		this.regulation_type_id = regulation_type_id;
 		this.regulation_type = regulation_type;
 	}
+
+	@Override
+	public String toString() {
+		return "RegulationType [regulation_type_id=" + regulation_type_id + ", regulation_type=" + regulation_type
+				+ "]";
+	}
 	
+	
+
 }

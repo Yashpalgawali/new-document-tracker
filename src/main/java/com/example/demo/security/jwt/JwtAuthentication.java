@@ -39,7 +39,8 @@ public class JwtAuthentication {
 		http.authorizeHttpRequests(auth -> {
 
 			auth.antMatchers("/users/**", "/authenticate", "/error").permitAll();
-			auth.anyRequest().authenticated();
+			auth.anyRequest().permitAll();
+//			auth.anyRequest().authenticated();
 		});
 
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

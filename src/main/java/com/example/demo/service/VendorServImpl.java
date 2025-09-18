@@ -15,7 +15,6 @@ import com.example.demo.models.User;
 import com.example.demo.models.UserType;
 import com.example.demo.models.Vendor;
 import com.example.demo.repository.ActivityRepository;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VendorRepository;
 
 @Service("vendserv")
@@ -25,20 +24,16 @@ public class VendorServImpl implements VendorService {
 	private final ActivityRepository actrepo;
 	private final UserService userserv;
 	private final BCryptPasswordEncoder passEncoder;
-
-	/**
-	 * @param vendrepo
-	 * @param actrepo
-	 * @param userserv
-	 * @param passEncoder
-	 */
+	private final IUserTypeService usertypeserv;
+	
 	public VendorServImpl(VendorRepository vendrepo, ActivityRepository actrepo, UserService userserv,
-			BCryptPasswordEncoder passEncoder) {
+			BCryptPasswordEncoder passEncoder, IUserTypeService usertypeserv) {
 		super();
 		this.vendrepo = vendrepo;
 		this.actrepo = actrepo;
 		this.userserv = userserv;
 		this.passEncoder = passEncoder;
+		this.usertypeserv = usertypeserv;
 	}
 
 	@Override
@@ -53,11 +48,8 @@ public class VendorServImpl implements VendorService {
 		user.setEnabled(1);
 		user.setRole("vendor");
 
-		UserType utype = new UserType();
-
-		utype.setUser_type_id(2);
-		utype.setUser_type("vendor");
-
+		UserType utype =  usertypeserv.getUserTypeById(2);
+		
 		user.setUsertype(utype);
 
 		User savedUser = userserv.saveUser(user);

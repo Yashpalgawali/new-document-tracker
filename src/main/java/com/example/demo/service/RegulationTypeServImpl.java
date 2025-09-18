@@ -66,8 +66,14 @@ public class RegulationTypeServImpl implements RegulationTypeService {
 
 	@Override
 	public int updateRegulationType(RegulationType rtype) {
+		
+		System.err.println("To be updated "+rtype.toString());
+		
 		int res = regulationtyperepo.updateregulationType(rtype.getRegulation_type_id(), rtype.getRegulation_type());
-		if (res > 0) {
+		
+		RegulationType regtype = regulationtyperepo.save(rtype);
+		
+		if (regtype!=null ) {
 			Activity act = new Activity();
 
 			act.setActivity("Regulation Type " + rtype.getRegulation_type() + " is updated successfully");
@@ -76,7 +82,9 @@ public class RegulationTypeServImpl implements RegulationTypeService {
 
 			actrepo.save(act);
 			return res;
-		} else {
+			
+		} 
+		else {
 			Activity act = new Activity();
 
 			act.setActivity("Regulation Type " + rtype.getRegulation_type() + " is not updated ");
