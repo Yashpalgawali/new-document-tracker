@@ -25,7 +25,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{userid}")
-	public ResponseEntity<User> findUserById(@PathVariable Long userid) throws ResourceNotFoundException {
+	public ResponseEntity<User> findUserById(@PathVariable Long userid)  {
 		User user = userserv.getUserById(userid);
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
@@ -33,11 +33,13 @@ public class UserController {
 	@PutMapping("/")
 	public ResponseEntity<String> changePassword(@RequestBody User user) {
 
-		int res = userserv.updateUserPassword(user);
-		if (res > 0) {
-			return new ResponseEntity<String>("Password is updated successfully", HttpStatus.OK);
-		} else {
-			return new ResponseEntity<String>("Password is not updated", HttpStatus.NOT_MODIFIED);
-		}
+		userserv.updateUserPassword(user);
+		return new ResponseEntity<String>("Password is updated successfully", HttpStatus.OK);		 
+	}
+	
+	@GetMapping("/email/{email}")
+	public ResponseEntity<User> findUserByEmail(@PathVariable String  email){
+		User user = userserv.getUserByEmail(email);
+		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 }

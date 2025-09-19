@@ -18,7 +18,6 @@ import com.example.demo.service.UserService;
 import com.example.demo.service.VendorService;
 
 @RequestMapping("vendor")
-@CrossOrigin("*")
 @RestController
 public class VendorController {
 

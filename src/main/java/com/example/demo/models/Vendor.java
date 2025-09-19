@@ -21,22 +21,22 @@ public class Vendor {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO,generator = "vendor_seq" )
 	private Integer vendor_id;
-	
+
 	private String vendor_name;
-	
+
 	private String vendor_email;
-	 
+
 	@Transient
 	private String username;
-	
+
 	@Transient
 	private String password;
-	  
+
 	@JsonIgnore
 	@OneToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "user_id")
 	private User user; 
-	
+
 	private Integer enabled;
 
 	public Integer getVendor_id() {

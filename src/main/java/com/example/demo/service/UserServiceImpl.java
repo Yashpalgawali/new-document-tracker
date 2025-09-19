@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.exceptions.GlobalException;
 import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exceptions.ResourceNotModifiedException;
 import com.example.demo.global.GlobalVars;
 import com.example.demo.models.Activity;
 import com.example.demo.models.User;
@@ -81,6 +82,19 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public int updateUserPassword(User user) {
 		String encodedPassword = passEncoder.encode(user.getCnf_password());
-		return userrepo.updateUserPassword(encodedPassword, user.getUserid());		 
+		int updateUserPassword = userrepo.updateUserPassword(encodedPassword, user.getUserid());
+		if(updateUserPassword>0)
+		{
+			return updateUserPassword;		 
+		}
+		else {
+			throw new ResourceNotModifiedException("The passowrd is not updated");
+		}
+	}
+
+	@Override
+	public User getUserByEmail(String email) {
+		return userrepo.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("No User Found for given Email "+email)) ;
+		
 	}
 }
