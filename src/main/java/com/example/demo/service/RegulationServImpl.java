@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,10 +23,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.exceptions.GlobalException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.global.GlobalVars;
 import com.example.demo.models.Activity;
 import com.example.demo.models.Regulation;
+import com.example.demo.models.RegulationDTO;
 import com.example.demo.models.RegulationHistory;
 import com.example.demo.repository.RegulationHistoryRepo;
 import com.example.demo.repository.RegulationRepository;
@@ -189,8 +192,43 @@ public class RegulationServImpl implements RegulationService {
 	
 
 	@Override
+	public List<RegulationDTO> getAllRegulationDtos() {
+		List<Regulation> regList = regulationrepo.findAll();
+		
+		if(regList.size()> 0 ) {
+			List<RegulationDTO> regulationDTOs = new ArrayList<>();
+			
+			for (Regulation regulation : regList) {
+				RegulationDTO rdto = new RegulationDTO();
+				rdto.setRegulation_id(regulation.getRegulation_id());
+				rdto.setRegulation_name(regulation.getRegulation_name());
+				rdto.setRegulation_description(regulation.getRegulation_description());
+				rdto.setRegulation_frequency(regulation.getRegulation_frequency());
+				rdto.setRegulation_issued_date(regulation.getRegulation_issued_date());
+				rdto.setNext_renewal_date(regulation.getNext_renewal_date());
+				rdto.setFile_name(regulation.getFile_name());
+				rdto.setFile_path(regulation.getFile_path());
+				rdto.setVendor(regulation.getVendor());
+				rdto.setRegulation_type(regulation.getRegulationtype());
+	
+				regulationDTOs.add(rdto);
+	
+			}
+			return regulationDTOs;
+		}
+		throw new ResourceNotFoundException("No Regulations found");
+		
+	}
+	
+	@Override
 	public List<Regulation> getAllRegulations() {
-		return regulationrepo.findAll();
+		List<Regulation> regList = regulationrepo.findAll();
+		
+		if(regList.size()> 0 ) {			 
+			return regList;
+		}
+		throw new GlobalException("No Regulations found");
+		
 	}
 
 	@Override

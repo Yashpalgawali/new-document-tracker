@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,11 +43,13 @@ public class VendorController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Vendor> getVendorById(@PathVariable Integer id) throws ResourceNotFoundException {
+	public ResponseEntity<Vendor> getVendorById(@PathVariable Integer id)   {
 
 		Vendor vendor = vendserv.getVendorById(id);
-		return new ResponseEntity<>(vendor, HttpStatus.OK);
-
+		vendor.setUsername(vendor.getUser().getUsername());
+		
+		System.err.println("Vendor found "+vendor.toString());		
+		return ResponseEntity.status(HttpStatus.OK).body(vendor);
 	}
 
 	@GetMapping("/user/{id}")

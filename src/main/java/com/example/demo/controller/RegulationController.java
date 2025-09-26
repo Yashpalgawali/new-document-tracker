@@ -93,7 +93,8 @@ public class RegulationController {
 
 		// Vendor vend =
 		// vendserv.getVendorById(Integer.parseInt(""+sess.getAttribute("vendor_id")));
-		Vendor vend = vendserv.getVendorById(Integer.parseInt("" + sess.getAttribute("vendor_id")));
+//		Vendor vend = vendserv.getVendorById(Integer.parseInt("" + sess.getAttribute("vendor_id")));
+		Vendor vend = vendserv.getVendorById(8);
 		regulate.setVendor(vend);
 
 		Regulation reg = regulationserv.saveRegulation(regulate, file);
@@ -106,37 +107,27 @@ public class RegulationController {
 
 	// Using the DTO class
 	@GetMapping("/")
-	public ResponseEntity<List<RegulationDTO>> getAllRegulations(HttpServletRequest request) {
+	public ResponseEntity<List<RegulationDTO>> getAllRegulationsDto(HttpServletRequest request) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		System.err.println("Auth Obj " + auth.toString());
 
-		List<Regulation> reglist = regulationserv.getAllRegulations();
-
-		List<RegulationDTO> regulationDTOs = new ArrayList<>();
-
-		for (Regulation regulation : reglist) {
-			RegulationDTO rdto = new RegulationDTO();
-			rdto.setRegulation_id(regulation.getRegulation_id());
-			rdto.setRegulation_name(regulation.getRegulation_name());
-			rdto.setRegulation_description(regulation.getRegulation_description());
-			rdto.setRegulation_frequency(regulation.getRegulation_frequency());
-			rdto.setRegulation_issued_date(regulation.getRegulation_issued_date());
-			rdto.setNext_renewal_date(regulation.getNext_renewal_date());
-			rdto.setFile_name(regulation.getFile_name());
-			rdto.setFile_path(regulation.getFile_path());
-			rdto.setVendor(regulation.getVendor());
-			rdto.setRegulation_type(regulation.getRegulationtype());
-
-			regulationDTOs.add(rdto);
-
-		}
-		if (reglist.size() > 0) {
-			return new ResponseEntity<List<RegulationDTO>>(regulationDTOs, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<List<RegulationDTO>>(HttpStatus.NO_CONTENT);
-		}
+		List<RegulationDTO> regulationDTOs = regulationserv.getAllRegulationDtos();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(regulationDTOs);
+		 
 	}
 
+	// Using the DTO class
+		@GetMapping("/list")
+		public ResponseEntity<List<Regulation>> getAllRegulations(HttpServletRequest request) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			System.err.println("Auth Obj " + auth.toString());
+
+			List<Regulation> regulations = regulationserv.getAllRegulations();
+			
+			return ResponseEntity.status(HttpStatus.OK).body(regulations);
+			 
+		}
 	@GetMapping("/{id}")
 	public ResponseEntity<Regulation> getRegulationById(@PathVariable Integer id) {
 		Regulation regulation = regulationserv.getRegulationById(id);
@@ -196,7 +187,7 @@ public class RegulationController {
 		int res = regulationserv.updateRegulation(regulate, file);
 		if (res > 0) {
 			return new ResponseEntity<Regulation>(HttpStatus.OK);
-		} else {
+		} else { 
 			return new ResponseEntity<Regulation>(HttpStatus.NOT_MODIFIED);
 		}
 	}

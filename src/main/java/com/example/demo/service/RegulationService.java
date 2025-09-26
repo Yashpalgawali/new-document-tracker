@@ -5,10 +5,13 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.models.Regulation;
+import com.example.demo.models.RegulationDTO;
 
 public interface RegulationService {
 
 	public Regulation saveRegulation(Regulation regulation, MultipartFile file);
+	
+	public List<RegulationDTO> getAllRegulationDtos();
 	
 	public List<Regulation> getAllRegulations();
 	
